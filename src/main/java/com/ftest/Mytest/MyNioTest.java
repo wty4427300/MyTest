@@ -5,6 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
+/**
+ *java sendfile() 的栗子
+ */
 public class MyNioTest {
     public static void main(String[] args) throws IOException {
         //创建流

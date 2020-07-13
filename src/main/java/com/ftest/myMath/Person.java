@@ -1,10 +1,12 @@
 package com.ftest.myMath;
 
+/**
+ * 一个简单的建造者模式的栗子
+ */
 public class Person {
     private String name;
     private String age;
     private int time;
-
 
     public static final class PersonBuilder {
         private String name;

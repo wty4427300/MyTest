@@ -57,6 +57,12 @@
             <artifactId>flink-csv</artifactId>
             <version>1.10.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/link.thingscloud/freeswitch-esl -->
+        <dependency>
+            <groupId>link.thingscloud</groupId>
+            <artifactId>freeswitch-esl</artifactId>
+            <version>1.2.5.RELEASE</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>MyTest</finalName>

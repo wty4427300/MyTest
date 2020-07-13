@@ -1,5 +1,8 @@
 package com.ftest.myMath;
 
+/**
+ * 根据不同的操作返回不同的代码
+ */
 public class Test1 {
     public static void main(String[] args) {
         System.out.println(or(1,1));

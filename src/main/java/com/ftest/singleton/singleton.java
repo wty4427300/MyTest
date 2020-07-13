@@ -1,5 +1,8 @@
 package com.ftest.singleton;
-//双检锁单例
+
+/**
+ * 双检锁单例
+ */
 public class singleton {
     private volatile static singleton instance;
 

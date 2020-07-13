@@ -9,6 +9,10 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Scanner;
 
+/**
+ * 简单的nio client
+ * nio写起来还是太麻烦了
+ */
 public class GroupChatClient {
 
     //定义相关的属性
