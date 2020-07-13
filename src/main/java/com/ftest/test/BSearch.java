@@ -57,6 +57,8 @@ public class BSearch {
             return bsearchInternally(a, low, mid - 1, value);
         }
     }
+
+    //元素重复的情况下，查找第一个元素==value的值
     public static int bsearch(int[] a, int n, int value) {
         int low = 0;
         int high = n - 1;
@@ -71,6 +73,65 @@ public class BSearch {
                     return mid;
                 } else {
                     high = mid - 1;
+                }
+            }
+        }
+        return -1;
+    }
+
+    //元素重复的情况下，查找最后一个元素==value的值
+    public static int bsearchByLast(int[] a, int n, int value) {
+        int low = 0;
+        int high = n - 1;
+        while (low <= high) {
+            int mid = low + ((high - low) >> 2);
+            if (a[mid] > value) {
+                high = mid - 1;
+            } else if (a[mid] < value) {
+                low = high + 1;
+            } else {
+                if (mid == 0 || (a[mid + 1] != value)) {
+                    return mid;
+                } else {
+                    low= mid + 1;
+                }
+            }
+        }
+        return -1;
+    }
+
+    //元素重复的情况下，查找第一个大于等于给定元素的值
+    public static int bsearchByFirst(int[] a, int n, int value) {
+        int low = 0;
+        int high = n - 1;
+        while (low <= high) {
+            int mid = low + ((high - low) >> 2);
+            if(a[mid]>=value){
+                if (mid==0||a[mid-1]<value){
+                    return mid;
+                }else {
+                    high=mid-1;
+                }
+            }else {
+                low=mid+1;
+            }
+        }
+        return -1;
+    }
+
+    //元素重复的情况下，查找最后一个一个小于等于给定元素的值
+    public static int bSearchByFirst(int[] a, int n, int value) {
+        int low = 0;
+        int high = n - 1;
+        while (low <= high) {
+            int mid = low + ((high - low) >> 2);
+            if(a[mid]>value){
+                high=mid-1;
+            }else {
+                if (mid==0||a[mid+1]>value){
+                    return mid;
+                }else {
+                    low=mid+1;
                 }
             }
         }
