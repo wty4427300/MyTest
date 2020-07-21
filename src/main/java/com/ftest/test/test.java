@@ -13,6 +13,9 @@ public class test {
         for (int a:linkedList){
             System.out.println(a);
         }
+        int a=16;
+        int b=a/10;
+        System.out.println(b);
     }
     public static void lru(Integer i,LinkedList<Integer> linkedList){
         if (linkedList.size()==0){

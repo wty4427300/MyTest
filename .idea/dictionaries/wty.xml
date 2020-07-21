@@ -2,6 +2,9 @@
   <dictionary name="wty">
     <words>
       <w>bsearch</w>
+      <w>inta</w>
+      <w>shabi</w>
+      <w>skiplist</w>
     </words>
   </dictionary>
 </component>
