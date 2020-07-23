@@ -89,6 +89,35 @@ public class Tree {
         }
         return list;
     }
+
+    /**
+     * @param root
+     * @return bfs层级遍历
+     */
+    public List<List<Integer>> bfs(TreeNode root) {
+        List<List<Integer>> lists = new ArrayList<>();
+        LinkedList<TreeNode> stack = new LinkedList<>();
+        if (root == null) {
+            return lists;
+        }
+        stack.add(root);
+        while (!stack.isEmpty()) {
+            int size = stack.size();
+            List<Integer> list = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode node = stack.pollFirst();
+                list.add(node.val);
+                if (node.left != null) {
+                    stack.add(node.left);
+                }
+                if (node.right != null) {
+                    stack.add(node.right);
+                }
+            }
+            lists.add(list);
+        }
+        return lists;
+    }
 }
 
 class TreeNode {
