@@ -118,6 +118,76 @@ public class Tree {
         }
         return lists;
     }
+
+    /**
+     * @param root
+     * @return
+     * 求树的深度，这个代码非常暴力
+     * 自己有点笨差点忘了
+     */
+    public static int maxDepth(TreeNode root){
+        //不断的迭代树如果节点不为空，那么就把节点的值作比较，因为空节点的值为0,所以非空节点一定大于空节点
+        //
+        if (root==null){
+            return 0;
+        }else {
+            int left=maxDepth(root.left);
+            int right=maxDepth(root.right);
+            return java.lang.Math.max(left,right) + 1;
+        }
+    }
+
+    /**
+     * @param root
+     * @return
+     * 判断树是否对称
+     */
+    public boolean isSymmetric(TreeNode root){
+        return check(root,root);
+    }
+
+    public boolean check(TreeNode p,TreeNode q){
+        if(p==null && q==null){
+            return true;
+        }
+        if (p==null||q==null){
+            return false;
+        }
+        return p.val==q.val && check(p.left,q.right)&&check(p.right,q.left);
+    }
+
+    /**
+     * @param sum
+     * @return
+     * 判断路径总和
+     */
+    public boolean hasPathSum(TreeNode root,int sum){
+        if(root==null){
+            return false;
+        }
+        if(root.left==null&&root.right==null){
+            return sum==root.val;
+        }
+        return hasPathSum(root.left,sum-root.val)||hasPathSum(root.right,sum-root.val);
+    }
+
+    public static void main(String[] args) {
+        TreeNode node1=new TreeNode(3);
+        TreeNode node2=new TreeNode(9);
+        TreeNode node3=new TreeNode(20);
+        TreeNode node4=new TreeNode(null);
+        TreeNode node5=new TreeNode(null);
+        TreeNode node6=new TreeNode(15);
+        TreeNode node7=new TreeNode(7);
+        node1.setLeft(node2);
+        node1.setRight(node3);
+        node2.setLeft(node4);
+        node2.setRight(node5);
+        node3.setLeft(node6);
+        node3.setRight(node7);
+        int dep = maxDepth(node1);
+        System.out.println(dep);
+    }
 }
 
 class TreeNode {
@@ -125,7 +195,31 @@ class TreeNode {
     TreeNode left;
     TreeNode right;
 
-    TreeNode(int x) {
+    TreeNode(Integer x) {
         val = x;
+    }
+
+    public int getVal() {
+        return val;
+    }
+
+    public void setVal(Integer val) {
+        this.val = val;
+    }
+
+    public TreeNode getLeft() {
+        return left;
+    }
+
+    public void setLeft(TreeNode left) {
+        this.left = left;
+    }
+
+    public TreeNode getRight() {
+        return right;
+    }
+
+    public void setRight(TreeNode right) {
+        this.right = right;
     }
 }
