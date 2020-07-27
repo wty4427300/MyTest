@@ -25,8 +25,6 @@ public class Dynamic {
     }
 
     /**
-     * @param n
-     * @return
      * 动规爬楼梯
      */
     public int climbStairs(int n) {
