@@ -1,9 +1,10 @@
 package com.ftest.test;
 
-/**
- * 动规买股票
- */
+
 public class Dynamic {
+    /**
+     * 动规买股票
+     */
     public int maxProfit(int[] prices) {
         if (prices == null || prices.length == 0) {
             return 0;
@@ -21,5 +22,23 @@ public class Dynamic {
             dp[i][1] = Math.max(dp[i - 1][1], -prices[i]);
         }
         return dp[n - 1][0];
+    }
+
+    /**
+     * @param n
+     * @return
+     * 动规爬楼梯
+     */
+    public int climbStairs(int n) {
+        if(n==1){
+            return 1;
+        }
+        int[] dp = new int[n+1];
+        dp[1]=1;
+        dp[2]=2;
+        for(int i=3;i<=n;i++){
+            dp[i]=dp[i-1]+dp[i-2];
+        }
+        return dp[n];
     }
 }
