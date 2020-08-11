@@ -9,7 +9,7 @@ public class MyfutureTask<T> implements Runnable{
 
     T result;
 
-    volatile String stste="NEW";
+    volatile String state="NEW";
 
     LinkedBlockingQueue<Thread> queue=new LinkedBlockingQueue<>();
 
@@ -19,10 +19,10 @@ public class MyfutureTask<T> implements Runnable{
 
     public T get(){
         //阻塞
-        if (stste.equals("END")){
+        if (state.equals("END")){
             return result;
         }
-        while (!"END".equals(stste)){
+        while (!"END".equals(state)){
             queue.add(Thread.currentThread());
             LockSupport.park();
         }
@@ -36,7 +36,7 @@ public class MyfutureTask<T> implements Runnable{
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
-            stste="END";
+            state="END";
         }
         Thread thread=queue.poll();
         while (queue!=null){

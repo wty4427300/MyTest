@@ -14,6 +14,7 @@ public class ThreadTest {
         FutureTask<Object> futureTask=new FutureTask<Object>(callable);
         new Thread(futureTask).start();
         Object o=futureTask.get();
+        System.out.println(o.getClass());
         System.out.println(a);
 
         //我的线程池的测试
