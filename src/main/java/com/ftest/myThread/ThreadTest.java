@@ -29,5 +29,7 @@ public class ThreadTest {
         ThreadPoolExecutor threadPoolExecutor=new ThreadPoolExecutor(5,10,1000, TimeUnit.MILLISECONDS,new LinkedBlockingQueue<>(512));
         FutureTask<Object> f1=new FutureTask<Object>(callable);
         new Thread(f1).start();
+        int o1 =(int) f1.get();
+        System.out.println(o1);
     }
 }
