@@ -3,30 +3,29 @@ package com.ftest.MyThread;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CASTest {
-    volatile static AtomicInteger count=new AtomicInteger(0);
-    public static void addOne(){
-        int newValue=0;
-        do {
-            newValue=count.getAndIncrement();
-        }while (count.compareAndSet(count.get(),newValue));
+    volatile static AtomicInteger count = new AtomicInteger(0);
+
+    public static void addOne() {
+        int newValue = count.get()+1;
+        count.compareAndSet(count.get(), newValue);
     }
 
-    public static void main(String[] args) {
-        Thread thread=new Thread(new Runnable() {
+    public static void main(String[] args) throws InterruptedException {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
+                for (int i = 0; i < 1000; i++) {
                     addOne();
-                    System.out.println("线程1----"+count);
+                    System.out.println("线程1----" + count);
                 }
             }
         });
-        Thread thread2=new Thread(new Runnable() {
+        Thread thread2 = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
+                for (int i = 0; i < 1000; i++) {
                     addOne();
-                    System.out.println("线程2----"+count);
+                    System.out.println("线程2----" + count);
                 }
             }
         });
