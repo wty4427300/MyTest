@@ -28,6 +28,7 @@ public class MyCache {
         //现在开始读取数据
         for (int i=0;i<size;i++){
             for (int j = 0; j < 8; j++) {
+                //按照缓存大小读取，每次都是64字节
                 sum = arr[i][j];
             }
         }

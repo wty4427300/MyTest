@@ -18,9 +18,11 @@ public class Quicksort {
         if (p >= r) {
             return;
         }
-        //获取分区点
+        //获取分区点,且进行第一次排序
         int q = partition(array, p, r);
+        //排序分区点的左边
         quickSort(array, p, q - 1);
+        //排序分区点的右边
         quickSort(array, q + 1, r);
     }
 
@@ -43,8 +45,10 @@ public class Quicksort {
             }
         }
         //这里是吧分区点和未处理区的第一个数[i]进行交换，
+        //为啥会出现未处理的i呢，因为上面的算法只处理了的小于分区点的元素。
+        //所以此时的i一定是大于分区点的
         swap(array,i,r);
-        System.out.println("i=" + i);
+        //经过交换之后，分区点由r变成了i
         return i;
     }
 
