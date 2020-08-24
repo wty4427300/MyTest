@@ -30,6 +30,37 @@ public class Heap {
         }
     }
 
+    public void remove(int index){
+        if (count==0){
+            //堆中没有数据
+            return;
+        }
+        a[index]=a[count];
+        --count;
+        delete(a,count,index);
+    }
+
+    public void delete(int[] a,int n,int i){
+        while (true){
+            int modPos=i;
+            //判断左节点
+            if (i*2<=n&&a[i]<a[i*2]){
+                modPos=i*2;
+            }
+            //判断右节点
+            if (i*2+1<=n&&a[i]<a[i*2+1]){
+                modPos=i*2+1;
+            }
+            if (modPos==i){
+                break;
+            }
+            //交换需要堆化的节点
+            swap(a, i, modPos);
+            //节点交换完毕，继续向下判断
+            i=modPos;
+        }
+    }
+
     public static void swap(int[] nums,int a,int b){
         int tmp = nums[a];
         nums[a] = nums[b];
