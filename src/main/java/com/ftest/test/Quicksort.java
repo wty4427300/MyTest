@@ -52,7 +52,7 @@ public class Quicksort {
         return i;
     }
 
-    final public static void swap(int[] nums,int a,int b){
+    public static void swap(int[] nums,int a,int b){
         int tmp = nums[a];
         nums[a] = nums[b];
         nums[b] = tmp;
