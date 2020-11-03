@@ -6,7 +6,7 @@ package com.ftest.test;
 public class Heap {
     private int[] a;//存储堆的数组
     private int n;//数组大小
-    private int count;//以存储数
+    private int count;//已经存储了多少
 
     public Heap(int capacity){
         a=new int[capacity+1];
@@ -30,17 +30,23 @@ public class Heap {
         }
     }
 
-    public void remove(int index){
+    public void remove(){
         if (count==0){
             //堆中没有数据
             return;
         }
-        a[index]=a[count];
+        //让堆顶和堆尾交换
+        a[1]=a[count];
         --count;
-        delete(a,count,index);
+        heapify(a,count,1);
     }
 
-    public void delete(int[] a,int n,int i){
+    /**
+     * @param a 数组
+     * @param n 当前存储的数量
+     * @param i
+     */
+    public void heapify(int[] a,int n,int i){
         while (true){
             int modPos=i;
             //判断左节点
@@ -55,9 +61,24 @@ public class Heap {
                 break;
             }
             //交换需要堆化的节点
-            swap(a, i, modPos);
+            swap(a,i,modPos);
             //节点交换完毕，继续向下判断
             i=modPos;
+        }
+    }
+    private static void buildHeap(int[] a,int n){
+        //自下而上的堆化
+        for (int i=n/2;i>=1;--i){
+            heapify1(a,n,i);
+        }
+    }
+
+    private static void heapify1(int[] a,int n,int i){
+        while (true){
+           int maxPos=i;
+           if (i*2<=n){
+
+           }
         }
     }
 
@@ -73,8 +94,9 @@ public class Heap {
         heap.insert(11);
         heap.insert(5);
         heap.insert(8);
-        for (int a: heap.a){
-            System.out.println(a);
+        heap.remove();
+        for (int i=0;i<=heap.count;i++){
+            System.out.println(heap.a[i]);
         }
     }
 }

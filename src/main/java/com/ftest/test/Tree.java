@@ -12,7 +12,6 @@ public class Tree {
      * @return 前序遍历
      */
     public List<Integer> preorder(TreeNode root) {
-
         LinkedList<TreeNode> stack = new LinkedList<>();
         LinkedList<Integer> output = new LinkedList<>();
         if (root == null) {
@@ -67,7 +66,6 @@ public class Tree {
         //这个还是基于栈的方式。list用来存结果，stack用来存子树
         LinkedList<Integer> list = new LinkedList<>();
         LinkedList<TreeNode> stack = new LinkedList<>();
-
         if (root == null) {
             return list;
         }
