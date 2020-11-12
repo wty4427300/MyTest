@@ -49,6 +49,8 @@ public class Test {
      * 建造模式,成员变量和主类完全一直.
      * 好处是构建的过程中完全对于一个类进行操作.每一次aClass的时候都是另外一个类.
      * javaBeans的方式(get,set)就无法保证这类的唯一性.
+     *
+     * 类是地用build时统一初始化的,而且还获得了一个链式的api
      */
     public static final class TestBuilder {
         private String name;
