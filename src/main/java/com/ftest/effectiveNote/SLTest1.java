@@ -15,7 +15,7 @@ public class SLTest1 {
     }
 
     public static void main(String[] args) {
-        SLTest1 slTest1=new SLTest1();
+        SLTest1 instance = SLTest1.instance;
     }
 
 }
