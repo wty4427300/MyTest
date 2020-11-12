@@ -2,8 +2,11 @@ package com.ftest.effectiveNote;
 
 import java.util.Arrays;
 import java.util.EmptyStackException;
-import java.util.Objects;
 
+/**
+ * 为什么堆会产生这种问题呢
+ * 因为堆可以说是自己管理了内存
+ */
 public class Stack {
     private Object[] elements;
     private int size=0;
