@@ -1,8 +1,15 @@
 package com.ftest.effectiveNote;
 
 public class Test1 {
-    private static long sum(){
+    private static long sum1(){
         long sum=0L;
+        for(long i=0;i<Integer.MAX_VALUE;i++){
+            sum+=i;
+        }
+        return sum;
+    }
+    private static long sum2(){
+        Long sum=0L;
         for(long i=0;i<Integer.MAX_VALUE;i++){
             sum+=i;
         }
@@ -10,10 +17,13 @@ public class Test1 {
     }
 
     public static void main(String[] args) {
-        long start = System.currentTimeMillis();
-        long sum = sum();
-        long end = System.currentTimeMillis();
-        System.out.println(sum);
-        System.out.println("时间:"+(end-start));
+        long start1 = System.currentTimeMillis();
+        long sum1 = sum1();
+        long end1 = System.currentTimeMillis();
+        System.out.println("时间1:"+(end1-start1));
+        long start2 = System.currentTimeMillis();
+        long sum2 = sum2();
+        long end2 = System.currentTimeMillis();
+        System.out.println("时间2:"+(end2-start2));
     }
 }
