@@ -11,6 +11,11 @@ public class NyPizza extends Pizza{
         size=builder.size;
     }
 
+    /**
+     * 父类的Builder的addToppings会调用self返回Builder本身
+     *
+     * 子类的builder的build方法会返回初始化自己的一个对象
+     */
     public static class Builder extends Pizza.Builder<Builder>{
         private final Size size;
 
