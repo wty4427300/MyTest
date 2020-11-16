@@ -2,6 +2,9 @@ package com.ftest.effectiveNote;
 
 import java.io.*;
 
+/**
+ * 节约了一些close代码,减少了异常覆盖的问题,是一种比较好的编码方式
+ */
 public class ResourceTest {
 
     /**
@@ -13,7 +16,7 @@ public class ResourceTest {
      * @throws IOException
      */
     public static String FirstLineOfFile(String path) throws IOException {
-        try(BufferedReader br=new BufferedReader(new FileReader(path))){
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             return br.readLine();
         }
     }
@@ -25,12 +28,12 @@ public class ResourceTest {
      * @param dst
      * @throws IOException
      */
-    public void copy(String src,String dst) throws IOException {
-        try(InputStream in=new FileInputStream(src);OutputStream out=new FileOutputStream(dst)){
-            byte[] bytes=new byte[1024];
+    public void copy(String src, String dst) throws IOException {
+        try (InputStream in = new FileInputStream(src); OutputStream out = new FileOutputStream(dst)) {
+            byte[] bytes = new byte[1024];
             int n;
-            while ((n=in.read(bytes))>=0){
-                out.write(bytes,0,n);
+            while ((n = in.read(bytes)) >= 0) {
+                out.write(bytes, 0, n);
             }
         }
     }
