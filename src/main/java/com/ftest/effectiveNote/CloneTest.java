@@ -1,7 +1,7 @@
 package com.ftest.effectiveNote;
 
 /**
- * 实现clonexus'/'/的样板代码
+ * 实现clone的样板代码
  */
 public class CloneTest implements Cloneable{
     public CloneTest clone(){
