@@ -1,4 +1,4 @@
-package com.ftest.MyParser;
+package com.ftest.myParser;
 
 public class SimpleYacc {
     public static void main(String[] args) {

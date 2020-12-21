@@ -1,4 +1,4 @@
-package com.ftest.MyParser;
+package com.ftest.myParser;
 
 import java.io.CharArrayReader;
 import java.io.IOException;

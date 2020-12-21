@@ -1,4 +1,4 @@
-package com.ftest.Mytest;
+package com.ftest.mytest;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

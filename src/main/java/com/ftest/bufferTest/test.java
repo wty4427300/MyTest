@@ -1,4 +1,4 @@
-package com.ftest.BufferTest;
+package com.ftest.bufferTest;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

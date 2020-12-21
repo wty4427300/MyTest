@@ -1,4 +1,4 @@
-package com.ftest.BufferTest;
+package com.ftest.bufferTest;
 
 import java.nio.ByteBuffer;
 //只读buffer

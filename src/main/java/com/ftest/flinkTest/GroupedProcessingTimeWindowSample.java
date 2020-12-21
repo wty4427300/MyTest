@@ -1,4 +1,4 @@
-package com.ftest.FlinkTest;
+package com.ftest.flinkTest;
 
 import org.apache.flink.api.common.functions.FoldFunction;
 import org.apache.flink.api.java.functions.KeySelector;

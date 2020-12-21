@@ -1,4 +1,4 @@
-package com.ftest.Leetcode;
+package com.ftest.leetcode;
 
 class Solution215_1 {
     public int findKthLargest(int[] nums, int k) {
