@@ -81,19 +81,23 @@ public class SimpleLexer {
         }
 
         DfaState newState = DfaState.Initial;
-        if (isAlpha(ch)) {              //第一个字符是字母
+        if (isAlpha(ch)) {
+            //第一个字符是字母
             if (ch == 'i') {
                 newState = DfaState.Id_int1;
             } else {
-                newState = DfaState.Id; //进入Id状态
+                //进入Id状态
+                newState = DfaState.Id;
             }
             token.type = TokenType.Identifier;
             tokenText.append(ch);
-        } else if (isDigit(ch)) {       //第一个字符是数字
+        } else if (isDigit(ch)) {
+            //第一个字符是数字
             newState = DfaState.IntLiteral;
             token.type = TokenType.IntLiteral;
             tokenText.append(ch);
-        } else if (ch == '>') {         //第一个字符是>
+        } else if (ch == '>') {
+            //第一个字符是>
             newState = DfaState.GT;
             token.type = TokenType.GT;
             tokenText.append(ch);
@@ -130,7 +134,8 @@ public class SimpleLexer {
             token.type = TokenType.Assignment;
             tokenText.append(ch);
         } else {
-            newState = DfaState.Initial; // skip all unknown patterns
+            // skip all unknown patterns
+            newState = DfaState.Initial;
         }
         return newState;
     }
@@ -154,22 +159,27 @@ public class SimpleLexer {
                 ch = (char) ich;
                 switch (state) {
                     case Initial:
-                        state = initToken(ch);          //重新确定后续状态
+                        //重新确定后续状态
+                        state = initToken(ch);
                         break;
                     case Id:
                         if (isAlpha(ch) || isDigit(ch)) {
-                            tokenText.append(ch);       //保持标识符状态
+                            //保持标识符状态
+                            tokenText.append(ch);
                         } else {
-                            state = initToken(ch);      //退出标识符状态，并保存Token
+                            //退出标识符状态，并保存Token
+                            state = initToken(ch);
                         }
                         break;
                     case GT:
                         if (ch == '=') {
-                            token.type = TokenType.GE;  //转换成GE
+                            //转换成GE
+                            token.type = TokenType.GE;
                             state = DfaState.GE;
                             tokenText.append(ch);
                         } else {
-                            state = initToken(ch);      //退出GT状态，并保存Token
+                            //退出GT状态，并保存Token
+                            state = initToken(ch);
                         }
                         break;
                     case GE:
@@ -181,13 +191,16 @@ public class SimpleLexer {
                     case SemiColon:
                     case LeftParen:
                     case RightParen:
-                        state = initToken(ch);          //退出当前状态，并保存Token
+                        //退出当前状态，并保存Token
+                        state = initToken(ch);
                         break;
                     case IntLiteral:
                         if (isDigit(ch)) {
-                            tokenText.append(ch);       //继续保持在数字字面量状态
+                            //继续保持在数字字面量状态
+                            tokenText.append(ch);
                         } else {
-                            state = initToken(ch);      //退出当前状态，并保存Token
+                            //退出当前状态，并保存Token
+                            state = initToken(ch);
                         }
                         break;
                     case Id_int1:
@@ -196,7 +209,8 @@ public class SimpleLexer {
                             tokenText.append(ch);
                         }
                         else if (isDigit(ch) || isAlpha(ch)){
-                            state = DfaState.Id;    //切换回Id状态
+                            //切换回Id状态
+                            state = DfaState.Id;
                             tokenText.append(ch);
                         }
                         else {
@@ -209,7 +223,8 @@ public class SimpleLexer {
                             tokenText.append(ch);
                         }
                         else if (isDigit(ch) || isAlpha(ch)){
-                            state = DfaState.Id;    //切换回id状态
+                            //切换回id状态
+                            state = DfaState.Id;
                             tokenText.append(ch);
                         }
                         else {
@@ -222,7 +237,8 @@ public class SimpleLexer {
                             state = initToken(ch);
                         }
                         else{
-                            state = DfaState.Id;    //切换回Id状态
+                            //切换回Id状态
+                            state = DfaState.Id;
                             tokenText.append(ch);
                         }
                         break;
