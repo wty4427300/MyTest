@@ -45,7 +45,7 @@ public class SimpleLexer {
     }
 
     //下面几个变量是在解析过程中用到的临时变量,如果要优化的话，可以塞到方法里隐藏起来
-    private StringBuffer tokenText = null;   //临时保存token的文本
+    private StringBuilder tokenText = null;   //临时保存token的文本
     private List<Token> tokens = null;       //保存解析出来的Token
     private SimpleToken token = null;        //当前正在解析的Token
 
@@ -76,7 +76,7 @@ public class SimpleLexer {
             token.text = tokenText.toString();
             tokens.add(token);
 
-            tokenText = new StringBuffer();
+            tokenText = new StringBuilder();
             token = new SimpleToken();
         }
 
@@ -149,7 +149,7 @@ public class SimpleLexer {
     public SimpleTokenReader tokenize(String code) {
         tokens = new ArrayList<Token>();
         CharArrayReader reader = new CharArrayReader(code.toCharArray());
-        tokenText = new StringBuffer();
+        tokenText = new StringBuilder();
         token = new SimpleToken();
         int ich = 0;
         char ch = 0;

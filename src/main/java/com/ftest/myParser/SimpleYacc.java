@@ -1,5 +1,8 @@
 package com.ftest.myParser;
 
+/**
+ * @author wty
+ */
 public class SimpleYacc {
     public static void main(String[] args) {
         prt("shabi");
