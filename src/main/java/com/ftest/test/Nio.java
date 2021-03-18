@@ -1,4 +1,4 @@
-package com;
+package com.ftest.test;
 
 import java.io.*;
 import java.nio.ByteBuffer;
