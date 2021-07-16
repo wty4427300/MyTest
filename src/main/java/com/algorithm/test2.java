@@ -2,6 +2,9 @@ package com.algorithm;
 
 import edu.princeton.cs.algs4.StdDraw;
 
+import java.awt.*;
+
+
 public class test2 {
 
     public static void draw1(){
@@ -39,12 +42,10 @@ public class test2 {
         }
     }
 
-    public static void draw3() throws InterruptedException {
-        StdDraw.clear(StdDraw.BLACK);
-        StdDraw.setScale(-2, +2);
-        StdDraw.enableDoubleBuffering();
+    public static void draw3(String tips,int tx,double radius,int multiple) throws InterruptedException {
         int i=0;
-        for (double t = 0.0; true; t += 0.01) {
+        for (double t = tx; true; t += 1.5) {
+            System.out.println(tips);
             double x = Math.sin(t);
             double y = Math.cos(t);
             if (i%2==0){
@@ -54,24 +55,53 @@ public class test2 {
             }
             i++;
             Thread.sleep(1);
-            StdDraw.filledCircle(x, y, 0.05);
+            StdDraw.filledCircle(multiple*x,multiple*y, radius);
             if (i%2==0){
                 StdDraw.setPenColor(StdDraw.YELLOW);
             }else {
-                StdDraw.setPenColor(StdDraw.BLACK);
+                StdDraw.setPenColor(StdDraw.BLUE);
             }
-            StdDraw.filledCircle(-x, -y, 0.05);
+            StdDraw.filledCircle(multiple*-x,multiple*-y, radius);
             StdDraw.show();
             StdDraw.pause(20);
         }
     }
+
+
     public static void main(String[] args) {
-        try {
-//            draw1();
-//            draw2();
-            draw3();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        StdDraw.clear(Color.BLACK);
+        StdDraw.setScale(-2,2);
+        StdDraw.enableDoubleBuffering();
+        Thread thread1=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    draw3("第一个",0,0.08,1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Thread thread2=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    draw3("第二个",1,0.1,2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Thread thread3=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                StdDraw.setPenRadius(0.05);
+                StdDraw.setPenColor(StdDraw.BLUE);
+                StdDraw.point(0, 0);
+            }
+        });
+        thread1.start();
+        thread2.start();
+        thread3.start();
     }
 }
