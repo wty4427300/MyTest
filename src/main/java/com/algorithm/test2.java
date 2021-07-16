@@ -8,23 +8,41 @@ public class test2 {
         StdDraw.setPenRadius(0.05);
         StdDraw.setPenColor(StdDraw.BLUE);
         StdDraw.point(0.5, 0.5);
-        StdDraw.setPenColor(StdDraw.MAGENTA);
-        StdDraw.line(0.2, 0.2, 0.8, 0.2);
     }
 
-    public static void draw2(){
-        int n=100;
+    public static void draw2() throws InterruptedException {
+        int n=500;
         StdDraw.setXscale(0,n);
         StdDraw.setYscale(0,n*n);
         StdDraw.setPenRadius(.01);
         for(int i=1;i<=n;i++){
+            if (i%2==0){
+                StdDraw.setPenColor(StdDraw.RED);
+            }else {
+                StdDraw.setPenColor(StdDraw.GREEN);
+            }
             StdDraw.point(i,i);
+            Thread.sleep(10);
+            if (i%2==0){
+                StdDraw.setPenColor(StdDraw.YELLOW);
+            }else {
+                StdDraw.setPenColor(StdDraw.BLUE);
+            }
             StdDraw.point(i,i*i);
+            if (i%2==1){
+                StdDraw.setPenColor(StdDraw.LIGHT_GRAY);
+            }else {
+                StdDraw.setPenColor(StdDraw.GREEN);
+            }
             StdDraw.point(i,i*Math.log(i));
         }
     }
     public static void main(String[] args) {
-        draw1();
-        draw2();
+        try {
+            draw1();
+            draw2();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
