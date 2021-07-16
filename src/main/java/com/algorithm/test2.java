@@ -95,11 +95,9 @@ public class test2 {
         Thread thread3=new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
-                    StdDraw.setPenRadius(0.05);
-                    StdDraw.setPenColor(StdDraw.BLUE);
-                    StdDraw.point(0, 0);
-                }
+                StdDraw.setPenRadius(0.05);
+                StdDraw.setPenColor(StdDraw.BLUE);
+                StdDraw.point(0, 0);
             }
         });
         thread1.start();
