@@ -45,6 +45,7 @@ public class test2 {
     public static void draw3(String tips,int tx,double radius,int multiple) throws InterruptedException {
         int i=0;
         for (double t = tx; true; t += 1.5) {
+            StdDraw.clear(Color.BLACK);
             System.out.println(tips);
             double x = Math.sin(t);
             double y = Math.cos(t);
@@ -69,7 +70,6 @@ public class test2 {
 
 
     public static void main(String[] args) {
-        StdDraw.clear(Color.BLACK);
         StdDraw.setScale(-2,2);
         StdDraw.enableDoubleBuffering();
         Thread thread1=new Thread(new Runnable() {
@@ -95,9 +95,11 @@ public class test2 {
         Thread thread3=new Thread(new Runnable() {
             @Override
             public void run() {
-                StdDraw.setPenRadius(0.05);
-                StdDraw.setPenColor(StdDraw.BLUE);
-                StdDraw.point(0, 0);
+                while (true){
+                    StdDraw.setPenRadius(0.05);
+                    StdDraw.setPenColor(StdDraw.BLUE);
+                    StdDraw.point(0, 0);
+                }
             }
         });
         thread1.start();
