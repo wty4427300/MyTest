@@ -13,6 +13,7 @@ public class test1 {
     }
 
     public static int rank(int key,int[] array){
+        //搜索区域的前置坐标
         int lo=0;
         //最大的下标=数组长度-1
         int hi=array.length-1;
@@ -35,7 +36,7 @@ public class test1 {
         System.out.println(gcd);
 
         int[] array={10,33,434,545,654,232};
-        int rank = rank(232, array);
+        int rank = rank(5, array);
         if (rank==-1){
             System.out.println("没有");
         }else {

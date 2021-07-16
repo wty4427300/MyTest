@@ -74,6 +74,12 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.69</version>
         </dependency>
+        <!--算法第4版的标准库-->
+        <dependency>
+            <groupId>edu.princeton.cs</groupId>
+            <artifactId>algs4</artifactId>
+            <version>1.0.3</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>MyTest</finalName>
