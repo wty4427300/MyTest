@@ -12,6 +12,13 @@ public class test1 {
         return gcd(q,r);
     }
 
+    /**
+     * 二分
+     *
+     * @param key
+     * @param array
+     * @return
+     */
     public static int rank(int key,int[] array){
         //搜索区域的前置坐标
         int lo=0;
