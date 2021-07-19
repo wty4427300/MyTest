@@ -45,7 +45,6 @@ public class test2 {
     public static void draw3(String tips,int tx,double radius,int multiple) throws InterruptedException {
         int i=0;
         for (double t = tx; true; t += 1.5) {
-            StdDraw.clear(Color.BLACK);
             System.out.println(tips);
             double x = Math.sin(t);
             double y = Math.cos(t);
@@ -72,6 +71,7 @@ public class test2 {
     public static void main(String[] args) {
         StdDraw.setScale(-2,2);
         StdDraw.enableDoubleBuffering();
+        StdDraw.clear(Color.BLACK);
         Thread thread1=new Thread(new Runnable() {
             @Override
             public void run() {
