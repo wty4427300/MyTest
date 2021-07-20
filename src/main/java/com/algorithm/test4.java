@@ -36,7 +36,7 @@ public class test4 {
         int len1 = nums1.length;
         int len2 = nums2.length;
         int[] nums = new int[len1 + len2];
-
+        //处理只有单数组的情况
         if (len1 == 0) {
             if (len2 % 2 == 0) {
                 return (nums2[len2 / 2 - 1] + nums2[len2 / 2]) / 2.0;
@@ -54,6 +54,7 @@ public class test4 {
         int count = 0;
         int i = 0; //len1
         int j = 0; //len2
+        //数组合并
         while (count != (len1 + len2)) {
             if (i == len1) {
                 while (j != len2) {
@@ -61,15 +62,12 @@ public class test4 {
                 }
                 break;
             }
-
             if (j == len2) {
                 while (i != len1) {
                     nums[count++] = nums1[i++];
                 }
                 break;
             }
-
-
             if (nums1[i] < nums2[j]) {
                 nums[count++] = nums1[i++];
             } else {
