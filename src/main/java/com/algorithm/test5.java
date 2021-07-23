@@ -44,7 +44,9 @@ public class test5 {
         int max = Integer.MIN_VALUE;
         for (int i = 0; i < n; i++) {
             pArr[i] = i < R ? Math.min(pArr[C * 2 - i], R - i) : 1;
+            //索引位置在chars范围之内
             while (i + pArr[i] < n && i - pArr[i] > -1) {
+                //左右相等是一个回文串
                 if (chars[i + pArr[i]] == chars[i - pArr[i]]) {
                     pArr[i]++;
                 } else {
@@ -95,7 +97,7 @@ public class test5 {
 //        System.out.println(c);
 //        char c1 = s.charAt(2);
 //        System.out.println(c1);
-        String a="2";
-        System.out.println(manacherString(a));
+        String a="babad";
+        System.out.println(longestPalindrome1(a));
     }
 }
