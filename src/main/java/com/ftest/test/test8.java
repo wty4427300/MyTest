@@ -8,28 +8,11 @@ import java.util.stream.Collectors;
 
 public class test8 {
     public static void main(String[] args) {
-        String a ="332\n" +
-                "333\n" +
-                "334\n" +
-                "335\n" +
-                "336\n" +
-                "337\n" +
-                "338\n" +
-                "339\n" +
-                "340\n" +
-                "341\n" +
-                "342\n" +
-                "343\n" +
-                "344\n" +
-                "345\n" +
-                "346\n" +
-                "347\n" +
-                "348\n" +
-                "349\n" +
-                "350\n" +
-                "351\n" +
-                "352\n" +
-                "353";
+        String a ="49580\n" +
+                "49646\n" +
+                "49383\n" +
+                "49497\n" +
+                "49498";
         String[] split = a.split("\n");
         List<String> collect = Arrays.stream(split).collect(Collectors.toList());
 //        System.out.println(collect.size());
@@ -60,7 +43,7 @@ public class test8 {
 //                }
 //        );
 
-//        sql(collect);
+        sql(collect);
 
 //        Arrays.stream(split).forEach(
 //                it->{
@@ -81,19 +64,20 @@ public class test8 {
 //        String b = "虹桥商务区2路";
 //        String[] split1 = b.split(";");
 //        System.out.println(split1.length);
-        System.out.println(collect.size());
-        collect.forEach(
-                it->{
-                    System.out.println("('2021-06-21 13:30:28','2022-06-21 13:30:28',19,"+it+",158.00,550.00,0,0,68),");
-                }
-        );
+//        System.out.println(collect.size());
+//        collect.forEach(
+//                it->{
+//                    System.out.println("('2021-06-21 13:30:28','2022-06-21 13:30:28',19,"+it+",158.00,550.00,0,0,68),");
+//                }
+//        );
     }
 
     public static void sql(List<String> collect) {
         System.out.println("(");
         collect.stream().forEach(
                 it -> {
-                    System.out.println("'"+it+"'"+ ",");
+                    System.out.println(it+ ",");
+//                    System.out.println("'"+it+"'"+ ",");
                 }
         );
         System.out.println(")");
