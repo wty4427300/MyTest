@@ -2,9 +2,19 @@
 <project version="4">
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
+      <option name="id" value="beachlanding-dental-jd-kepler" />
+      <option name="name" value="jd-kepler" />
+      <option name="url" value="https://beachlanding-maven.pkg.coding.net/repository/dental/jd-kepler/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Central Repository" />
+      <option name="url" value="http://maven.aliyun.com/nexus/content/groups/public/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
@@ -20,6 +30,11 @@
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="https://maven.aliyun.com/repository/public" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="beachlanding-dental-dental-pojo" />
+      <option name="name" value="dental-pojo" />
+      <option name="url" value="https://beachlanding-maven.pkg.coding.net/repository/dental/dental-pojo/" />
     </remote-repository>
   </component>
 </project>
