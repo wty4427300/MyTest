@@ -1,13 +1,7 @@
 package com;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import org.apache.flink.util.ArrayUtils;
-
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class main {
     public static void main(String[] args) {

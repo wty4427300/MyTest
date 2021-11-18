@@ -9,13 +9,7 @@ import java.util.stream.Collectors;
 
 public class test8 {
     public static void main(String[] args) {
-        String a = "8cb94068a5e5424cb41f537857f73bc2\n" +
-                "4b9de8afb71641679b343a3338795c87\n" +
-                "ea5fd0c419bd4432b54c65a5d91bd4ef\n" +
-                "bb7aec4c05a64d84945e1bcbad07feef\n" +
-                "2f1559c91e6c45148adaacb35af940a0\n" +
-                "4fe0e0c7f0dd4ec9b43c856cfdc22893\n" +
-                "7b7d023bbd814459a7008fe1eb840697";
+        String a = "";
         String[] split = a.split("\n");
         List<String> collect = Arrays.stream(split).collect(Collectors.toList());
 //        update(collect);
