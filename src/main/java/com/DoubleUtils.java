@@ -1,5 +1,7 @@
 package com;
 
+import com.ftest.MyThread.Main;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -10,7 +12,7 @@ import java.math.RoundingMode;
  * ROUND_HALF_DOWN  五舍六入
  *
  * */
-public class DoubleUtils {
+public class DoubleUtils extends Main {
 
     public static Double toScale2(String number){
         BigDecimal b = new BigDecimal(number);
@@ -68,5 +70,9 @@ public class DoubleUtils {
         BigDecimal b2 = new BigDecimal(Double.toString(value2));
         BigDecimal discountPrice = b1.multiply(b2).setScale(2,rm);
         return discountPrice.doubleValue();
+    }
+
+    public static void main(String[] args) {
+        System.out.println("bbbb");
     }
 }
