@@ -12,9 +12,9 @@ public class test8 {
         String a = "";
         String[] split = a.split("\n");
         List<String> collect = Arrays.stream(split).collect(Collectors.toList());
-//        update(collect);
+        update(collect);
 //        price(collect);
-        sql(collect);
+//        sql(collect);
         System.out.println(collect.size());
 //        System.out.println(collect.size());
 //        collect.forEach(
@@ -75,7 +75,7 @@ public class test8 {
         collect.stream().forEach(
                 it -> {
 //                    System.out.println(it+ ",");
-                    System.out.println("\'"+it+"\'"+",");
+                    System.out.println(it+",");
                 }
         );
         System.out.println(")");
@@ -128,9 +128,11 @@ public class test8 {
     }
 
     public static void update(List<String> collect){
+        System.out.println("insert into buser (phone, email, name, role_id, merchant_id, status, password, gmt_create, gmt_modified)\n" +
+                "values");
         collect.forEach(it->{
-            String[] split = it.split(",");
-            System.out.println("update order_statement_detail set statement_price="+split[1]+" where order_sub_id="+split[0]+";");
+            String[] split = it.split("\t");
+            System.out.println("('"+split[5]+"','"+split[6]+"','"+split[4]+"',3,6,0,'e10adc3949ba59abbe56e057f20f883e',now(),now()),");
         });
     }
 
