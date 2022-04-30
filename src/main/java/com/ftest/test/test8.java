@@ -10,29 +10,19 @@ import java.util.stream.Collectors;
 
 public class test8 {
     public static void main(String[] args) {
-        String a = "773\n" +
-                "774\n" +
-                "778\n" +
-                "779\n" +
-                "780\n" +
-                "781\n" +
-                "784\n" +
-                "838\n" +
-                "1139";
+        String a ="";
         String[] split = a.split("\n");
-//        List<AljkSyncCargoRequest> requests = Arrays.stream(split).map(
-//                it -> {
-//                    String[] split1 = it.split("\t");
-//                    AljkSyncCargoRequest request = new AljkSyncCargoRequest();
-//                    request.setItemId(Long.valueOf(split1[1]));
-//                    request.setStoreId(Long.valueOf(split1[0]));
-//                    return request;
-//                }
-//        ).collect(Collectors.toList());
-//        System.out.println(JSON.toJSONString(requests));
-//        update(collect,set);
+        List<AljkSyncCargoRequest> requests = Arrays.stream(split).map(
+                it -> {
+                    AljkSyncCargoRequest request = new AljkSyncCargoRequest();
+                    request.setStoreId(Long.valueOf(it));
+                    return request;
+                }
+        ).collect(Collectors.toList());
+        System.out.println(JSON.toJSONString(requests));
+//        update(null,null);
 //        price(collect);
-        sql(Arrays.stream(split).collect(Collectors.toList()));
+//        sql(Arrays.stream(split).collect(Collectors.toList()));
 //        collect.forEach(
 //                it->{
 //                    System.out.println("('"+uuid()+"',10183,'洗牙保健兑换券',"+it+",now(),now(),0,'2021-06-21 13:30:28','2022-06-21 13:30:28'),");
@@ -86,27 +76,21 @@ public class test8 {
 //        );
     }
     public static void update(List<String> collect,Set<String> set){
-        System.out.println("insert into buser (phone, email, name, role_id, merchant_id, status, password, gmt_create, gmt_modified)\n" +
-                "values");
-        collect.forEach(it->{
-            String[] split = it.split("\t");
-            if (set.add(split[5])){
-                System.out.println("('"+split[4]+"','"+split[5]+"','"+split[3]+"',3,6,0,'e10adc3949ba59abbe56e057f20f883e',now(),now()),");
-            }else {
-                System.out.println(split[5]);
-            }
-        });
+        int a=2; int b=1;
+        for (int i=0;i<70;i++){
+            System.out.println("update channel_storesyn_rule set config_id="+a+" where id="+b+";");
+            a++;
+            b++;
+        }
     }
 
     public static void sql(List<String> collect) {
         System.out.println("insert into channel_storesyn_rule (gmt_create, gmt_modified, config_id, rule_type, rule_judge, item_id, store_id, sold_price) values");
-        System.out.println("(");
         collect.stream().forEach(
                 it -> {
-                    System.out.println("(now(),now(),1,store,6,0,'e10adc3949ba59abbe56e057f20f883e',now(),now()),");
+                    System.out.println("(now(),now(),1,'store',3,0,"+it+",0),");
                 }
         );
-        System.out.println(")");
     }
 
     public static void json1(List<Integer> collect) {
