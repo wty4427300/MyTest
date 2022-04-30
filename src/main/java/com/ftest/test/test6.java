@@ -14,6 +14,7 @@ public class test6 {
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
+
     private static String decryptS5(String sSrc, String sKey, String ivParameter) {
         try {
             BASE64Decoder decoder = new BASE64Decoder();
@@ -26,7 +27,7 @@ public class test6 {
                 Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
                 cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
                 data = cipher.doFinal(myendicod);
-            }catch (Exception e){
+            } catch (Exception e) {
                 Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
                 cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
                 data = cipher.doFinal(myendicod);
@@ -57,6 +58,7 @@ public class test6 {
             throw new IllegalArgumentException(var8);
         }
     }
+
     public static void main(String[] args) {
     }
 }
