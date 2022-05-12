@@ -10,16 +10,52 @@ import java.util.stream.Collectors;
 
 public class test8 {
     public static void main(String[] args) {
-        String a ="";
+        String a ="41778\n" +
+                "41977\n" +
+                "42095\n" +
+                "35672\n" +
+                "41471\n" +
+                "41549\n" +
+                "41556\n" +
+                "41563\n" +
+                "41570\n" +
+                "41731\n" +
+                "41738\n" +
+                "41745\n" +
+                "41752\n" +
+                "41759\n" +
+                "41831\n" +
+                "41838\n" +
+                "41845\n" +
+                "41852\n" +
+                "41859\n" +
+                "41866\n" +
+                "41873\n" +
+                "41986\n" +
+                "41993\n" +
+                "42000\n" +
+                "42007\n" +
+                "42014\n" +
+                "42035\n" +
+                "42042\n" +
+                "42049\n" +
+                "42070\n" +
+                "42077\n" +
+                "46026\n" +
+                "46043\n" +
+                "46058\n" +
+                "46073";
         String[] split = a.split("\n");
-        List<AljkSyncCargoRequest> requests = Arrays.stream(split).map(
-                it -> {
-                    AljkSyncCargoRequest request = new AljkSyncCargoRequest();
-                    request.setStoreId(Long.valueOf(it));
-                    return request;
-                }
-        ).collect(Collectors.toList());
-        System.out.println(JSON.toJSONString(requests));
+//        List<AljkSyncCargoRequest> requests = Arrays.stream(split).map(
+//                it -> {
+//                    String[] split1 = it.split("\t");
+//                    AljkSyncCargoRequest request = new AljkSyncCargoRequest();
+//                    request.setStoreId(Long.valueOf(split1[0]));
+//                    request.setItemId(Long.valueOf(split1[1]));
+//                    return request;
+//                }
+//        ).collect(Collectors.toList());
+//        System.out.println(JSON.toJSONString(requests));
 //        update(null,null);
 //        price(collect);
 //        sql(Arrays.stream(split).collect(Collectors.toList()));
@@ -64,7 +100,7 @@ public class test8 {
 //                }
 //        ).collect(Collectors.toList());
 //        sql(collect);
-//        json2(collect);
+        json2(Arrays.stream(split).collect(Collectors.toList()));
 //        String b = "虹桥商务区2路";
 //        String[] split1 = b.split(";");
 //        System.out.println(split1.length);
@@ -107,7 +143,7 @@ public class test8 {
         System.out.println("[");
         collect.stream().forEach(
                 it -> {
-                    System.out.println("\"" + it + "\"" + ",");
+                    System.out.println("" + it + "" + ",");
                 }
         );
         System.out.println("]");
