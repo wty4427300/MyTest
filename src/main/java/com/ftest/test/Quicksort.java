@@ -1,5 +1,8 @@
 package com.ftest.test;
 
+/**
+ * 快排的模板代码
+ */
 public class Quicksort {
     public static void main(String[] args) {
         int[] a = new int[]{8, 10, 2, 3, 6, 1, 5};
@@ -44,7 +47,7 @@ public class Quicksort {
                 }
             }
         }
-        //这里是吧分区点和未处理区的第一个数[i]进行交换，
+        //这里是把分区点和未处理区的第一个数[i]进行交换，
         //为啥会出现未处理的i呢，因为上面的算法只处理了的小于分区点的元素。
         //所以此时的i一定是大于分区点的
         swap(array,i,r);
