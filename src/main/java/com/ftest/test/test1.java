@@ -35,6 +35,7 @@ public class test1 {
         }
         swap(array, i, r);
         return i;
+
     }
 
     public static void swap(int[] nums,int a,int b){
