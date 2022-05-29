@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.algorithm;
 
 class ListNode {
     Integer val;
@@ -9,7 +9,7 @@ class ListNode {
     }
 }
 
-public class Leed2o6 {
+public class test2o6 {
     public ListNode reverseList(ListNode head) {
         ListNode prev = null;
         ListNode curr = head;
@@ -23,7 +23,7 @@ public class Leed2o6 {
     }
 
     public static void main(String[] args) {
-        Leed2o6 leed2o6 = new Leed2o6();
+        test2o6 leed2o6 = new test2o6();
         ListNode listNode1=new ListNode(1);
         ListNode listNode2=new ListNode(2);
         ListNode listNode3=new ListNode(3);
