@@ -1,5 +1,8 @@
 package com.algorithm;
 
+/**
+ * 目前的写法会导致树高度失衡，下次再优化
+ */
 public class test450 {
 
     public TreeNode deleteNode(TreeNode root, int key) {
