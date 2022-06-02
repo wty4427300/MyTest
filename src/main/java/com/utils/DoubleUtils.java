@@ -1,4 +1,4 @@
-package com;
+package com.utils;
 
 import com.ftest.MyThread.Main;
 

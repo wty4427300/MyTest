@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 public class Test3 {
     private static volatile int signal=0;

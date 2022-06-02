@@ -1,7 +1,4 @@
-package com.ftest.test;
-
-import java.util.Arrays;
-import java.util.List;
+package com.test;
 
 public class test12 {
     public static void main(String[] args) {

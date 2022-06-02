@@ -1,8 +1,4 @@
-package com.ftest.test;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+package com.test;
 
 public class test10 {
     public static void main(String[] args) {

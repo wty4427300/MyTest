@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 /**
  * 1.先进先出fifo

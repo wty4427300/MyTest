@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 public class AljkSyncCargoRequest {
     private Long itemId;

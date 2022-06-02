@@ -113,7 +113,7 @@
                                     <artifact>*</artifact>
                                     <excludes>
                                         <exclude>log4j.properties</exclude>
-                                        <exclude>log4j-com.ftest.test.properties</exclude>
+                                        <exclude>log4j-com.test.properties</exclude>
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>

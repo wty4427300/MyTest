@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 import java.util.Iterator;
 import java.util.concurrent.LinkedBlockingQueue;

@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 public class Test2 {
     private static Object lock = new Object();

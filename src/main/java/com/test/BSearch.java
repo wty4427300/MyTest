@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 /**
  * 准备的二分法模版，有更好的思路再改

@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 public class GTest {
     public static void main(String[] args) {

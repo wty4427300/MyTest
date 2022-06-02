@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 /**
  * 一个关于矩阵旋转的例子

@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 public class Test4 {
     public static void main(String[] args) {

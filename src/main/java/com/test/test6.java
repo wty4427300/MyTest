@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import sun.misc.BASE64Decoder;

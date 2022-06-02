@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;

@@ -1,4 +1,4 @@
-package com.ftest.test;
+package com.test;
 
 /**
  * 快排的模板代码
