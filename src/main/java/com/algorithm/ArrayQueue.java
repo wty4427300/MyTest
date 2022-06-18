@@ -1,4 +1,4 @@
-package com.test;
+package com.algorithm;
 
 /**
  * 1.先进先出fifo

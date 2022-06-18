@@ -1,4 +1,4 @@
-package com.test;
+package com.algorithm;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -173,8 +173,8 @@ public class Tree {
         TreeNode node1=new TreeNode(3);
         TreeNode node2=new TreeNode(9);
         TreeNode node3=new TreeNode(20);
-        TreeNode node4=new TreeNode(null);
-        TreeNode node5=new TreeNode(null);
+        TreeNode node4=new TreeNode(0);
+        TreeNode node5=new TreeNode(0);
         TreeNode node6=new TreeNode(15);
         TreeNode node7=new TreeNode(7);
         node1.setLeft(node2);
@@ -185,39 +185,5 @@ public class Tree {
         node3.setRight(node7);
         int dep = maxDepth(node1);
         System.out.println(dep);
-    }
-}
-
-class TreeNode {
-    int val;
-    TreeNode left;
-    TreeNode right;
-
-    TreeNode(Integer x) {
-        val = x;
-    }
-
-    public int getVal() {
-        return val;
-    }
-
-    public void setVal(Integer val) {
-        this.val = val;
-    }
-
-    public TreeNode getLeft() {
-        return left;
-    }
-
-    public void setLeft(TreeNode left) {
-        this.left = left;
-    }
-
-    public TreeNode getRight() {
-        return right;
-    }
-
-    public void setRight(TreeNode right) {
-        this.right = right;
     }
 }

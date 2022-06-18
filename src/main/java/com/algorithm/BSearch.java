@@ -1,4 +1,4 @@
-package com.test;
+package com.algorithm;
 
 /**
  * 准备的二分法模版，有更好的思路再改
