@@ -7,18 +7,16 @@ import java.util.List;
 public class test1108 {
     public String defangIPaddr(String address) {
         char[] chars = address.toCharArray();
-        List<Character> result=new ArrayList<>();
+        StringBuffer stringBuffer=new StringBuffer();
         for (char c:chars){
             if (c=='.'){
-                result.add('[');
-                result.add('.');
-                result.add(']');
+                stringBuffer.append('[');
+                stringBuffer.append('.');
+                stringBuffer.append(']');
             }else {
-                result.add(c);
+                stringBuffer.append(c);
             }
         }
-        StringBuffer stringBuffer=new StringBuffer();
-        result.forEach(stringBuffer::append);
         return stringBuffer.toString();
     }
 
