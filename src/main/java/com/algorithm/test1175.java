@@ -7,9 +7,9 @@ public class test1175 {
     static int mod = (int) 1e9 + 7;
     static List<Integer> list = new ArrayList<>();
 
+    //质数是大于1的，所以从2开始
+    //100以内的质数
     static {
-        //质数是大于1的，所以从2开始
-        //100以内的质数
         for (int i = 2; i <= 100; i++) {
             boolean ok = true;
             for (int j = 2; j * j <= i; j++) {
@@ -25,6 +25,7 @@ public class test1175 {
 
     public int numPrimeArrangements(int n) {
         int l = 0, r = list.size() - 1;
+        //二分求质数范围
         while (l < r) {
             int mid = l + r + 1 >> 1;
             if (list.get(mid) <= n){
