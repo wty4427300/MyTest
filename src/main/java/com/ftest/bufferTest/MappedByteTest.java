@@ -6,6 +6,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
 //让文件在内存(堆外内存)中修改，操作系统不需要cp
+//mmap
 public class MappedByteTest {
     public static void main(String[] args) throws IOException {
         RandomAccessFile randomAccessFile=new RandomAccessFile("1.txt","rw");

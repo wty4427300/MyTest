@@ -1,4 +1,4 @@
-package com.ftest.myParser;
+package com.myparser;
 
 /**
  * @author wty

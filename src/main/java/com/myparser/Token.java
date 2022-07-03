@@ -1,4 +1,4 @@
-package com.ftest.myParser;
+package com.myparser;
 
 public interface Token {
     //token的类型
