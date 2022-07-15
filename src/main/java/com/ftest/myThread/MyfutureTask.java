@@ -1,4 +1,4 @@
-package com.ftest.myThread;
+package com.ftest.MyThread;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
