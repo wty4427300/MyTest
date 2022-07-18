@@ -20,7 +20,7 @@ class Node4 {
         bottomLeft = _bottomLeft;
         bottomRight = _bottomRight;
     }
-};
+}
 
 public class test558 {
     public Node4 intersect(Node4 quadTree1, Node4 quadTree2) {
