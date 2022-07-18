@@ -1,6 +1,7 @@
 package com.algorithm;
 
 class Node4 {
+
     public boolean val;
     public boolean isLeaf;
     public Node4 topLeft;
