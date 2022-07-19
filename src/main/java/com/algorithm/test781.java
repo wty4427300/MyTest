@@ -19,7 +19,7 @@ class MyCalendarTwo {
     }
 
     public boolean book(int start, int end) {
-        for (int arr[] : overlaps) {
+        for (int[] arr : overlaps) {
             int l = arr[0], r = arr[1];
             //时间有交集,三重预定
             if (l < end && start < r) {
