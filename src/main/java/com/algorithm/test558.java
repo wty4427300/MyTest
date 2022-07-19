@@ -47,4 +47,7 @@ public class test558 {
         if (ans.isLeaf) ans.topLeft = ans.topRight = ans.bottomLeft = ans.bottomRight = null;
         return ans;
     }
+
+    public static void main(String[] args) {
+    }
 }
