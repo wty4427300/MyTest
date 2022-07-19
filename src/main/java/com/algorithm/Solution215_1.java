@@ -1,4 +1,4 @@
-package com.algorithm.leetcode;
+package com.algorithm;
 
 class Solution215_1 {
     public int findKthLargest(int[] nums, int k) {
