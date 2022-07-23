@@ -1,6 +1,7 @@
 package com.algorithm;
 
 class Node4 {
+
     public boolean val;
     public boolean isLeaf;
     public Node4 topLeft;
@@ -19,7 +20,7 @@ class Node4 {
         bottomLeft = _bottomLeft;
         bottomRight = _bottomRight;
     }
-};
+}
 
 public class test558 {
     public Node4 intersect(Node4 quadTree1, Node4 quadTree2) {
@@ -45,5 +46,8 @@ public class test558 {
         ans.val = ans.topLeft.val;
         if (ans.isLeaf) ans.topLeft = ans.topRight = ans.bottomLeft = ans.bottomRight = null;
         return ans;
+    }
+
+    public static void main(String[] args) {
     }
 }
