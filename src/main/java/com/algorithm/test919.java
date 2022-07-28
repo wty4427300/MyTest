@@ -55,4 +55,8 @@ class CBTInserter {
     public TreeNode get_root() {
         return root;
     }
+
+    public static void main(String[] args) {
+        String a = "{\"patientId\":22,\"source\":1}";
+    }
 }
