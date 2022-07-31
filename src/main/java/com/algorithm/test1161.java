@@ -19,6 +19,7 @@ public class test1161 {
                 //查看并移除队列头的元素
                 TreeNode node = deque.pollFirst();
                 //并遍历子节点,累加当前层级的值
+                assert node != null;
                 if (node.left != null) {
                     deque.add(node.left);
                 }
