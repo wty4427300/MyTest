@@ -60,6 +60,7 @@ class MyCircularQueue {
 
     /**
      * 检查队列是否为空
+     * 存取一样多则ta==he
      */
     public boolean isEmpty() {
         return he == ta;
