@@ -3,6 +3,11 @@ package com.algorithm;
 import java.util.Arrays;
 
 public class test899 {
+    /**
+     * 移动一位的最小序列需要遍历比较
+     * 移动两位以上一定可以获得升序序列
+     * 所以直接排序字符串即可
+     */
     public String orderlyQueue(String s, int k) {
         if (k == 1) {
             String smallest = s;
