@@ -9,7 +9,7 @@ class ListNode {
     }
 }
 
-public class test2o6 {
+public class test206 {
     public ListNode reverseList(ListNode head) {
         ListNode prev = null;
         ListNode curr = head;
@@ -23,7 +23,7 @@ public class test2o6 {
     }
 
     public static void main(String[] args) {
-        test2o6 leed2o6 = new test2o6();
+        test206 leed2o6 = new test206();
         ListNode listNode1=new ListNode(1);
         ListNode listNode2=new ListNode(2);
         ListNode listNode3=new ListNode(3);
