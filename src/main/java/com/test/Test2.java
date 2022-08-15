@@ -1,7 +1,10 @@
 package com.test;
 
+/**
+ * wait,notify的简单例子
+ */
 public class Test2 {
-    private static Object lock = new Object();
+    private static final Object lock = new Object();
 
     static class ThreadA implements Runnable {
         @Override

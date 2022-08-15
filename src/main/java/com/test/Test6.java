@@ -10,7 +10,10 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.security.*;
 
-public class test6 {
+/**
+ * 加解密的简单例子
+ */
+public class Test6 {
     static {
         Security.addProvider(new BouncyCastleProvider());
     }

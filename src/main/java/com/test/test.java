@@ -2,6 +2,9 @@ package com.test;
 
 import java.util.LinkedList;
 
+/**
+ * lru的简单实现
+ */
 public class test {
     public static void main(String[] args) {
         LinkedList<Integer> linkedList=new LinkedList<>();
