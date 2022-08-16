@@ -18,9 +18,9 @@ class OrderedStream {
     }
 
     public List<String> insert(int idKey, String value) {
-        arr[idKey]=value;
-        List<String> result=new ArrayList<>();
-        while (ptr<arr.length && arr[ptr]!=null){
+        arr[idKey] = value;
+        List<String> result = new ArrayList<>();
+        while (ptr < arr.length && arr[ptr] != null) {
             result.add(arr[ptr]);
             ++ptr;
         }
