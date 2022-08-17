@@ -33,25 +33,25 @@ public class test1302 {
 
     //层级遍历解法
     public int deepestLeavesSum(TreeNode root) {
-        Map<Integer,Integer> map=new HashMap<>();
-        Deque<TreeNode> deque=new ArrayDeque<>();
-        int depth=0;
+        Map<Integer, Integer> map = new HashMap<>();
+        Deque<TreeNode> deque = new ArrayDeque<>();
+        int depth = 0;
         deque.add(root);
-        while (!deque.isEmpty()){
-            int sz= deque.size();
-            while (sz-->0){
-                TreeNode node= deque.pollFirst();
+        while (!deque.isEmpty()) {
+            int sz = deque.size();
+            while (sz-- > 0) {
+                TreeNode node = deque.pollFirst();
                 assert node != null;
-                map.put(depth,map.getOrDefault(depth,0)+node.val);
-                if (node.left!=null){
+                map.put(depth, map.getOrDefault(depth, 0) + node.val);
+                if (node.left != null) {
                     deque.addLast(node.left);
                 }
-                if (node.right!=null){
+                if (node.right != null) {
                     deque.addLast(node.right);
                 }
             }
             depth++;
         }
-        return map.get(depth-1);
+        return map.get(depth - 1);
     }
 }
