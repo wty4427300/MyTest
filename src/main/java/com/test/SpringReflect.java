@@ -8,14 +8,14 @@ import java.lang.reflect.Modifier;
 /**
  * spring排除static相关信息的代码,小抄一手
  */
-public class Test13 {
+public class SpringReflect {
     private String name;
     private static String desc;
 
-    public Test13() {
+    public SpringReflect() {
     }
 
-    public Test13(String name) {
+    public SpringReflect(String name) {
         this.name = name;
     }
 
@@ -32,11 +32,11 @@ public class Test13 {
     }
 
     public static void setDesc(String desc) {
-        Test13.desc = desc;
+        SpringReflect.desc = desc;
     }
 
     public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        Class<?> aClass = Class.forName("com.test.Test13");
+        Class<?> aClass = Class.forName("com.test.SpringReflect");
         Field[] declaredFields = aClass.getDeclaredFields();
         for (Field field : declaredFields) {
             if (Modifier.isStatic(field.getModifiers())) {
@@ -45,8 +45,8 @@ public class Test13 {
                 System.out.println("普通:" + field.getName());
             }
         }
-        Test13 test = (Test13) aClass.newInstance();
-        Test13.setDesc("小张");
+        SpringReflect test = (SpringReflect) aClass.newInstance();
+        SpringReflect.setDesc("小张");
         test.setName("小王");
         System.out.println(JSON.toJSONString(test));
         System.out.println(desc);

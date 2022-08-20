@@ -1,5 +1,8 @@
 package com.test;
 
+/**
+ * volatile的简单例子
+ */
 public class Test3 {
     private static volatile int signal=0;
 
