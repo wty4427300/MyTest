@@ -23,7 +23,7 @@ public class test662 {
         }
         ans=Math.max(ans,u-map.get(depth)+1);
         dfs(root.left,u<<1,depth+1);
-        dfs(root.right,u<<1|1,depth+1);
+        dfs(root.right,u<<1|1,depth+1                                              );
     }
 
     public static void main(String[] args) {
