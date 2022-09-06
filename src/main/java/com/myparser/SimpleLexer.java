@@ -68,6 +68,7 @@ public class SimpleLexer {
      * 有限状态机进入初始状态。
      * 这个初始状态其实并不做停留，它马上进入其他状态。
      * 开始解析的时候，进入初始状态；某个Token解析完毕，也进入初始状态，在这里把Token记下来，然后建立一个新的Token。
+     *
      * @param ch
      * @return
      */
@@ -143,6 +144,7 @@ public class SimpleLexer {
     /**
      * 解析字符串，形成Token。
      * 这是一个有限状态自动机，在不同的状态中迁移。
+     *
      * @param code
      * @return
      */
@@ -207,13 +209,11 @@ public class SimpleLexer {
                         if (ch == 'n') {
                             state = DfaState.Id_int2;
                             tokenText.append(ch);
-                        }
-                        else if (isDigit(ch) || isAlpha(ch)){
+                        } else if (isDigit(ch) || isAlpha(ch)) {
                             //切换回Id状态
                             state = DfaState.Id;
                             tokenText.append(ch);
-                        }
-                        else {
+                        } else {
                             state = initToken(ch);
                         }
                         break;
@@ -221,13 +221,11 @@ public class SimpleLexer {
                         if (ch == 't') {
                             state = DfaState.Id_int3;
                             tokenText.append(ch);
-                        }
-                        else if (isDigit(ch) || isAlpha(ch)){
+                        } else if (isDigit(ch) || isAlpha(ch)) {
                             //切换回id状态
                             state = DfaState.Id;
                             tokenText.append(ch);
-                        }
-                        else {
+                        } else {
                             state = initToken(ch);
                         }
                         break;
@@ -235,8 +233,7 @@ public class SimpleLexer {
                         if (isBlank(ch)) {
                             token.type = TokenType.Int;
                             state = initToken(ch);
-                        }
-                        else{
+                        } else {
                             //切换回Id状态
                             state = DfaState.Id;
                             tokenText.append(ch);
@@ -262,7 +259,7 @@ public class SimpleLexer {
      * Token的一个简单实现。只有类型和文本值两个属性。
      */
 
-    private final class SimpleToken implements Token {
+    private static final class SimpleToken implements Token {
         //Token类型
         private TokenType type = null;
 
@@ -283,13 +280,14 @@ public class SimpleLexer {
 
     /**
      * 打印所有的Token
+     *
      * @param tokenReader
      */
-    public static void dump(SimpleTokenReader tokenReader){
+    public static void dump(SimpleTokenReader tokenReader) {
         System.out.println("text\ttype");
         Token token = null;
-        while ((token= tokenReader.read())!=null){
-            System.out.println(token.getText()+"\t\t"+token.getType());
+        while ((token = tokenReader.read()) != null) {
+            System.out.println(token.getText() + "\t\t" + token.getType());
         }
     }
 
@@ -315,7 +313,7 @@ public class SimpleLexer {
     /**
      * 一个简单的Token流。是把一个Token列表进行了封装。
      */
-    private class SimpleTokenReader implements TokenReader {
+    private static class SimpleTokenReader implements TokenReader {
         List<Token> tokens = null;
         int pos = 0;
 
@@ -353,7 +351,7 @@ public class SimpleLexer {
 
         @Override
         public void setPosition(int position) {
-            if (position >=0 && position < tokens.size()){
+            if (position >= 0 && position < tokens.size()) {
                 pos = position;
             }
         }
