@@ -1,5 +1,6 @@
 package com.test;
 
+import com.alibaba.fastjson.JSON;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import sun.misc.BASE64Decoder;
 
@@ -9,6 +10,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.security.*;
+import java.util.List;
 
 /**
  * 加解密的简单例子
@@ -63,5 +65,8 @@ public class Test6 {
     }
 
     public static void main(String[] args) {
+        String arr="[\"年\",\"月\",\"周\",\"天\"]";
+        List<String> strings = JSON.parseArray(arr, String.class);
+        System.out.println(strings);
     }
 }
