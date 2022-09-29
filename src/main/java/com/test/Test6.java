@@ -65,8 +65,5 @@ public class Test6 {
     }
 
     public static void main(String[] args) {
-        String arr="[\"年\",\"月\",\"周\",\"天\"]";
-        List<String> strings = JSON.parseArray(arr, String.class);
-        System.out.println(strings);
     }
 }
