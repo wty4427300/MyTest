@@ -21,6 +21,7 @@ public class test870 {
         for (int i = 0; i < n; i++) {
             //首元素比较
             if (nums1[idx1[i]] > nums2[idx2[left]]) {
+                //nums1[i]的值放在这个idx2[left]位置一定大于nums2[idx2[left]]
                 ans[idx2[left]] = nums1[idx1[i]];
                 left++;
             } else {
