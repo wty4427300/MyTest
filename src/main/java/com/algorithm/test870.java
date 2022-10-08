@@ -26,7 +26,7 @@ public class test870 {
                 left++;
             } else {
                 ans[idx2[right]] = nums1[idx1[i]];
-                --right;
+                right--;
             }
         }
         return ans;
