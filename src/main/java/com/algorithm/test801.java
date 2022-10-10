@@ -31,7 +31,7 @@ public class test801 {
             int at = a, bt = b;
             a = b = n;
             if (nums1[i] > nums1[i - 1] && nums2[i] > nums2[i - 1])  {
-                //都不换的情况
+                //i,i-1都不换的情况
                 a = Math.min(a, at);
                 //i,i-1都换的情况
                 b = Math.min(b, bt + 1);
