@@ -16,4 +16,11 @@ public class test769 {
         }
         return ans;
     }
+
+    public static void main(String[] args) {
+        int[] arr =new int[]{2,3,0,1,4,5};
+        test769 test769=new test769();
+        int i = test769.maxChunksToSorted(arr);
+        System.out.println(i);
+    }
 }
