@@ -1,5 +1,8 @@
 package com.algorithm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class test1704 {
     public boolean halvesAreAlike(String s) {
         int half = s.length() / 2;
@@ -19,4 +22,5 @@ public class test1704 {
         }
         return sum1 == sum2;
     }
+
 }
