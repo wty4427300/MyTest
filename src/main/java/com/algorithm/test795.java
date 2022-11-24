@@ -1,8 +1,5 @@
 package com.algorithm;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
 
 public class test795 {
     public int numSubarrayBoundedMax(int[] nums, int left, int right) {
