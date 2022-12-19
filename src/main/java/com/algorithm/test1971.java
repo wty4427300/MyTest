@@ -12,7 +12,7 @@ public class test1971 {
         for (int i=0;i<n;i++){
             adj[i]= new ArrayList<>();
         }
-        //遍历所有的边
+        //遍历所有的边,初始化邻接表(双向图)
         for (int[] edge:edges){
             int x=edge[0],y=edge[1];
             adj[x].add(y);

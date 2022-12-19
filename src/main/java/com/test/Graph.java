@@ -2,6 +2,7 @@ package com.test;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Queue;
 
 /**
@@ -27,6 +28,7 @@ public class Graph {
     /**
      * s起始顶点
      * t终止顶点
+     * 层级遍历
      */
     public void bfs(int s, int t) {
         if (s == t) {
@@ -65,10 +67,38 @@ public class Graph {
         System.out.println(t + " ");
     }
 
-    boolean found=false;
+    boolean found = false;
 
-    public void dfs(int s,int t){
-        found=false;
-        boolean[] visited=new boolean[v];
+    /**
+     * @param s
+     * @param t
+     * 深度遍历
+     */
+    public void dfs(int s, int t) {
+        found = false;
+        boolean[] visited = new boolean[v];
+        int[] prev=new int[v];
+        //初始化遍历路径
+        Arrays.fill(prev,-1);
+        recurDfs(s, t, visited, prev);
+        this.print(prev, s, t);
+    }
+
+    private void recurDfs(int w,int t,boolean[] visited,int[] prev){
+        if (found){
+            return;
+        }
+        visited[w]=true;
+        if (w==t){
+            found=true;
+            return;
+        }
+        for (int i=0;i<adj[w].size();i++){
+            int next=adj[w].get(i);
+            if (!visited[next]){
+                prev[next]=w;
+                recurDfs(next,t,visited,prev);
+            }
+        }
     }
 }
