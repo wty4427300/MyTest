@@ -23,21 +23,21 @@ public class test {
     public static void lru(Integer i,LinkedList<Integer> linkedList){
         if (linkedList.size()==0){
             linkedList.addFirst(i);
-        }else {
-            for(Integer a:linkedList){
-                if(a.equals(i)){
+        } else {
+            for (Integer a : linkedList) {
+                if (a.equals(i)) {
                     //如果存在就删除这个节点
                     linkedList.remove(a);
                     //并把这个元素移动到开头
                     linkedList.addFirst(i);
                     break;
-                }else {
+                } else {
                     //如果不存在
-                    if (linkedList.size() <=10) {
+                    if (linkedList.size() <= 10) {
                         //还有内存的情况下，直接添加在开头
                         linkedList.addFirst(i);
                         break;
-                    }else {
+                    } else {
                         //内存不足的情况下
                         //删除最后一个节点
                         linkedList.removeLast();
