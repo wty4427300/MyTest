@@ -1,5 +1,8 @@
 package com.algorithm;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class test1750 {
     public int minimumLength(String s) {
         int l = 0, r = s.length() - 1;
@@ -31,5 +34,18 @@ public class test1750 {
             }
         }
         return right - left + 1;
+    }
+
+    public static void main(String[] args) {
+        List<Integer> integers = Arrays.asList(1, 2,3,4,5,6,7,8,9,10);
+        integers.stream().forEach(it->{
+            try {
+                Thread.sleep((int)(Math.random()*100));
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println(it);
+        });
+        integers.stream().parallel().forEach(System.out::println);
     }
 }
