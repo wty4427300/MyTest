@@ -15,6 +15,7 @@ public class test855 {
         }
 
         public int seat() {
+            //如果考场没人,学生坐在0号位
             if (set.isEmpty()) {
                 set.add(0);
                 return 0;
