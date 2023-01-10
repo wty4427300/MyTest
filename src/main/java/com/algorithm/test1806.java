@@ -11,7 +11,7 @@ public class test1806 {
             target[i] = i;
         }
         int count = 0;
-        while (true) {
+        do {
             int[] arr = new int[n];
             for (int i = 0; i < n; i++) {
                 if ((i & 1) != 0) {
@@ -24,10 +24,7 @@ public class test1806 {
             }
             perm = arr;
             count++;
-            if (Arrays.equals(perm, target)) {
-                break;
-            }
-        }
+        } while (!Arrays.equals(perm, target));
         return count;
     }
 }
