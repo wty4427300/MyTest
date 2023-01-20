@@ -1,10 +1,5 @@
 package com.algorithm;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 public class test1813 {
     public boolean areSentencesSimilar(String sentence1, String sentence2) {
         String[] words1 = sentence1.split(" ");
