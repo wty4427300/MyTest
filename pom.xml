@@ -74,12 +74,12 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.83</version>
         </dependency>
-<!--        &lt;!&ndash;算法第4版的标准库&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>edu.princeton.cs</groupId>-->
-<!--            <artifactId>algs4</artifactId>-->
-<!--            <version>1.0.4</version>-->
-<!--        </dependency>-->
+        <!--算法第4版的标准库-->
+        <dependency>
+            <groupId>edu.princeton.cs</groupId>
+            <artifactId>algs4</artifactId>
+            <version>1.0.3</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>MyTest</finalName>
@@ -140,11 +140,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <!--
-                                    Disable inherited shade-flink to prevent the Shade plugin from changing the project.basedir. The basedir
-                                    is changed by the Shade plugin when dependencyReducedPomLocation is set to a different location than the
-                                    original basedir. We do that in the root pom.xml.
-                                    -->
                         <id>shade-flink</id>
                         <phase>none</phase>
                     </execution>

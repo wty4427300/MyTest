@@ -7,7 +7,7 @@ public class test1817 {
         Map<Integer, Set<Integer>> map = new HashMap<>();
         Arrays.stream(logs).forEach(
                 it -> {
-                    map.putIfAbsent(it[0], new HashSet<Integer>());
+                    map.putIfAbsent(it[0], new HashSet<>());
                     map.get(it[0]).add(it[1]);
                 }
         );

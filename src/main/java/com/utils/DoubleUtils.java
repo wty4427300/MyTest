@@ -15,14 +15,12 @@ public class DoubleUtils extends Main {
 
     public static Double toScale2(String number) {
         BigDecimal b = new BigDecimal(number);
-        double result = b.setScale(2, RoundingMode.HALF_UP).doubleValue();
-        return result;
+        return b.setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     public static Double toScale2(Double number) {
         BigDecimal b = new BigDecimal(Double.toString(number));
-        double result = b.setScale(2, RoundingMode.HALF_UP).doubleValue();
-        return result;
+        return b.setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     /**
