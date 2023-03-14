@@ -6,7 +6,7 @@ public class MyReadWriteCasLock {
     private AtomicInteger readers = new AtomicInteger(0); // 当前读锁的数量
     private AtomicInteger writers = new AtomicInteger(0); // 当前写锁的数量
     private AtomicInteger writeRequests = new AtomicInteger(0); // 写锁等待的请求数量
-    private final int maxReadLock=20;
+    private final int maxReadLock=200;
     /**
      * 获取读锁
      */
