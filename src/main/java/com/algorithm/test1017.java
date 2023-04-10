@@ -1,6 +1,7 @@
 package com.algorithm;
 
 public class test1017 {
+
     public String baseNeg2(int n) {
         if(n==0){
             return "0";
