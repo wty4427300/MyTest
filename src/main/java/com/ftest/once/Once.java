@@ -3,7 +3,7 @@ package com.ftest.once;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Once {
-    private AtomicBoolean executed = new AtomicBoolean(false);
+    private final AtomicBoolean executed = new AtomicBoolean(false);
 
     public void doOnce(Runnable action) {
         if (executed.compareAndSet(false, true)) {
