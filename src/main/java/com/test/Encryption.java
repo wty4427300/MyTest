@@ -1,6 +1,5 @@
 package com.test;
 
-import com.alibaba.fastjson.JSON;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import sun.misc.BASE64Decoder;
 
@@ -9,13 +8,13 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.util.List;
 
 /**
  * 加解密的简单例子
  */
-public class Test6 {
+public class Encryption {
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
@@ -27,7 +26,7 @@ public class Test6 {
             SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
             IvParameterSpec iv = new IvParameterSpec(decoder.decodeBuffer(ivParameter));
             byte[] myendicod = decoder.decodeBuffer(sSrc);
-            byte[] data = null;
+            byte[] data;
             try {
                 Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
                 cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
@@ -37,8 +36,7 @@ public class Test6 {
                 cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
                 data = cipher.doFinal(myendicod);
             }
-            String originalString = new String(data, "UTF-8");
-            return originalString;
+            return new String(data, StandardCharsets.UTF_8);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -55,8 +53,7 @@ public class Test6 {
             IvParameterSpec iv = new IvParameterSpec(decoder.decodeBuffer(ivParameter));
             cipher.init(2, key, iv);
             byte[] data = cipher.doFinal(myendicod);
-            String originalString = new String(data, "UTF-8");
-            return originalString;
+            return new String(data, StandardCharsets.UTF_8);
         } catch (NoSuchPaddingException | NoSuchAlgorithmException var7) {
             throw new IllegalStateException(var7);
         } catch (InvalidAlgorithmParameterException | InvalidKeyException var8) {
