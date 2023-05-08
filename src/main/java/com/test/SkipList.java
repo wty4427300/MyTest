@@ -4,6 +4,9 @@ import java.util.Random;
 
 import com.utils.MyPrint;
 
+/**
+ * 跳表
+ */
 public class SkipList {
     /**
      * 跳表的节点，每个节点记录了当前节点数据和所在层数数据
@@ -32,8 +35,6 @@ public class SkipList {
 
     /**
      * 随机 level 次，如果是奇数层数 +1，防止伪随机
-     *
-     * @return
      */
     private int randomLevel() {
         int level = 1;
@@ -67,20 +68,18 @@ public class SkipList {
                 if (p.forwards[i] == null) {
                     // 如果前一节点的下一个节点为空，就将当前节点插入到前一节点的后面
                     p.forwards[i] = newNode;
-                    this.printAll_beautiful1();
                 } else {
                     // 如果前一节点的下一个节点不为空，就将当前节点插入到前一节点和下一个节点之间
                     Node next = p.forwards[i];
                     p.forwards[i] = newNode;
                     newNode.forwards[i] = next;
-                    this.printAll_beautiful1();
                 }
             }
         }
     }
 
     public void delete(int value) {
-        // 1. 查找当前节点的前一节点，记录在 update 数组中
+        // 1. 查找当前(需要删除)节点的前一节点，记录在 update 数组中
         Node[] update = new Node[levelCount];
         Node p = head;
         for (int i = levelCount - 1; i >= 0; --i) {
@@ -103,26 +102,25 @@ public class SkipList {
         }
     }
 
-    /**
-     * 打印所有数据
-     */
-    public void printAll_beautiful() {
-        Node[] c = head.forwards;
-        Node[] d = c;
-        int maxLevel = c.length;
-        for (int i = maxLevel - 1; i >= 0; i--) {
-            do {
-                System.out.print((d[i] != null ? d[i].data : null) + ":" + i + "-------");
-            } while (d[i] != null && (d = d[i].forwards)[i] != null);
-            System.out.println();
-            d = c;
+    public Node find(int value) {
+        Node p = head;
+        for (int i = levelCount - 1; i >= 0; --i) {
+            while (p.forwards[i] != null && p.forwards[i].data < value) {
+                p = p.forwards[i];
+            }
+        }
+
+        if (p.forwards[0] != null && p.forwards[0].data == value) {
+            return p.forwards[0];
+        } else {
+            return null;
         }
     }
 
     /**
      * 彩色打印
      */
-    public void printAll_beautiful1() {
+    public void printAll_beautiful() {
         Node[] c = head.forwards;
         Node[] d = c;
         int maxLevel = c.length;
@@ -145,6 +143,9 @@ public class SkipList {
         list.insert(7);
         list.insert(3);
         list.insert(4);
-        System.out.println();
+        list.delete(7);
+        list.printAll_beautiful();
+        Node node = list.find(4);
+        System.out.println("找到节点:" + node.data);
     }
 }
