@@ -48,7 +48,7 @@ public class SkipList {
 
     public void insert(int value) {
         //1. 随机当前节点的层数
-        int level = head.forwards[0] == null ? 1 : randomLevel();
+        int level = head.forwards[0] == null ? 1 : this.randomLevel();
         //2. 如果随机的层数大于当前跳表的层数，就将跳表的层数加1
         if (level > levelCount) {
             level = ++levelCount;
