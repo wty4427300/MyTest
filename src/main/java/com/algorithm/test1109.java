@@ -1,6 +1,6 @@
 package com.algorithm;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 
 public class test1109 {
     public static int[] corpFlightBookings(int[][] bookings, int n) {

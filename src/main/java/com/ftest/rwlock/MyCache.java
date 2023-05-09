@@ -1,7 +1,5 @@
 package com.ftest.rwlock;
 
-import org.apache.flink.types.MapValue;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;

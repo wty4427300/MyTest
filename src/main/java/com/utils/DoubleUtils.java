@@ -1,17 +1,15 @@
 package com.utils;
 
-import com.ftest.MyThread.Main;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * ROUND_UP         向远离零的方向舍入
+ * ROUND_UP         向远离a零的方向舍入
  * ROUND_DOWN       向接近零的方向舍入
  * ROUND_HALF_UP    四舍五入
  * ROUND_HALF_DOWN  五舍六入
  */
-public class DoubleUtils extends Main {
+public class DoubleUtils {
 
     public static Double toScale2(String number) {
         BigDecimal b = new BigDecimal(number);
@@ -46,7 +44,7 @@ public class DoubleUtils extends Main {
     public static double sub(Double value1, Double value2) {
         BigDecimal b1 = new BigDecimal(Double.toString(value1));
         BigDecimal b2 = new BigDecimal(Double.toString(value2));
-        return b1.subtract(b2).setScale(2,RoundingMode.HALF_UP).doubleValue();
+        return b1.subtract(b2).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     /**
