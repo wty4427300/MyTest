@@ -77,6 +77,9 @@ public class Sds {
         Sds sds = new Sds("夏天");
         sds.append("你好");
         System.out.println(sds);
+        Sds sds1 = new Sds();
+        sds1.append("你");
+        System.out.println(sds1);
     }
 }
 
