@@ -74,9 +74,7 @@ public class Sds {
     }
 
     public static void main(String[] args) {
-        String str = "王天翼";
-        System.out.println(str.length());
-        Sds sds = new Sds("王天翼");
+        Sds sds = new Sds("夏天");
         sds.append("你好");
         System.out.println(sds);
     }
