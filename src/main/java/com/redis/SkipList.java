@@ -1,27 +1,22 @@
-package com.test;
+package com.redis;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
- * 跳表的实现
- *
- * @param <T> 数据类型
+ * 跳表
  */
-public class GenericSkipList<T extends Comparable<T>> {
+public class SkipList {
     /**
      * 跳表的节点，每个节点记录了当前节点数据和所在层数数据
      */
-    static class Node<T> {
-        private T data;
+    static class Node {
+        private int data = -1;
         /**
          * 表示当前节点位置的下一个节点所有层的数据，从上层切换到下层，就是数组下标-1，
          * forwards[3]表示当前节点在第三层的下一个节点。
          */
-        private final Node<T>[] forwards;
+        private final Node[] forwards;
 
-        @SuppressWarnings("unchecked")
         public Node(int level) {
             forwards = new Node[level];
         }
@@ -33,7 +28,7 @@ public class GenericSkipList<T extends Comparable<T>> {
     /**
      * 带头链表
      */
-    private final Node<T> head = new Node<>(MAX_LEVEL);
+    private final Node head = new Node(MAX_LEVEL);
     private final Random r = new Random();
 
     /**
@@ -49,7 +44,7 @@ public class GenericSkipList<T extends Comparable<T>> {
         return level;
     }
 
-    public void insert(T value) {
+    public void insert(int value) {
         //1. 随机当前节点的层数
         int level = head.forwards[0] == null ? 1 : this.randomLevel();
         //2. 如果随机的层数大于当前跳表的层数，就将跳表的层数加1
@@ -57,12 +52,12 @@ public class GenericSkipList<T extends Comparable<T>> {
             level = ++levelCount;
         }
         //3. 创建新的节点，记录当前节点数据和层数,并初始化我的下层节点数组
-        Node<T> newNode = new Node<>(level);
+        Node newNode = new Node(level);
         newNode.data = value;
         //4. 从最高层开始查找当前节点的前一节点
-        Node<T> p = head;
+        Node p = head;
         for (int i = levelCount - 1; i >= 0; --i) {
-            while (p.forwards[i] != null && p.forwards[i].data.compareTo(value) < 0) {
+            while (p.forwards[i] != null && p.forwards[i].data < value) {
                 //如果当前层的下一个节点小于当前节点，就继续向后查找
                 p = p.forwards[i];
             }
@@ -73,7 +68,7 @@ public class GenericSkipList<T extends Comparable<T>> {
                     p.forwards[i] = newNode;
                 } else {
                     // 如果前一节点的下一个节点不为空，就将当前节点插入到前一节点和下一个节点之间
-                    Node<T> next = p.forwards[i];
+                    Node next = p.forwards[i];
                     p.forwards[i] = newNode;
                     newNode.forwards[i] = next;
                 }
@@ -81,34 +76,34 @@ public class GenericSkipList<T extends Comparable<T>> {
         }
     }
 
-    public void delete(T value) {
+    public void delete(int value) {
         // 1. 查找当前(需要删除)节点的前一节点，记录在 update 数组中
-        List<Node<T>> update = new ArrayList<>(levelCount);
-        Node<T> p = head;
+        Node[] update = new Node[levelCount];
+        Node p = head;
         for (int i = levelCount - 1; i >= 0; --i) {
-            while (p.forwards[i] != null && p.forwards[i].data.compareTo(value) < 0) {
+            while (p.forwards[i] != null && p.forwards[i].data < value) {
                 // 如果当前层的下一个节点小于当前节点，就继续向后查找
                 p = p.forwards[i];
             }
             // 将前一节点记录在 update 数组中
-            update.add(i, p);
+            update[i] = p;
         }
 
         // 2. 如果前一节点的下一个节点是目标节点，就从每层删除目标节点
         if (p.forwards[0] != null && p.forwards[0].data == value) {
             for (int i = levelCount - 1; i >= 0; --i) {
-                if (update.get(i).forwards[i] != null && update.get(i).forwards[i].data == value) {
+                if (update[i].forwards[i] != null && update[i].forwards[i].data == value) {
                     // 将前一节点的下一个节点指向目标节点的下一个节点，从而删除目标节点
-                    update.get(i).forwards[i] = update.get(i).forwards[i].forwards[i];
+                    update[i].forwards[i] = update[i].forwards[i].forwards[i];
                 }
             }
         }
     }
 
-    public Node<T> find(T value) {
-        Node<T> p = head;
+    public Node find(int value) {
+        Node p = head;
         for (int i = levelCount - 1; i >= 0; --i) {
-            while (p.forwards[i] != null && p.forwards[i].data.compareTo(value) < 0) {
+            while (p.forwards[i] != null && p.forwards[i].data < value) {
                 p = p.forwards[i];
             }
         }
@@ -120,14 +115,35 @@ public class GenericSkipList<T extends Comparable<T>> {
         }
     }
 
+    /**
+     * 彩色打印
+     */
+    public void printAll_beautiful() {
+        Node[] c = head.forwards;
+        Node[] d = c;
+        int maxLevel = c.length;
+        System.out.println();
+        for (int i = maxLevel - 1; i >= 0; i--) {
+            //这个方法会修改打印的颜色,所以之后的就不用再调用了
+            System.out.printf("Level " + i + ": ");
+            do {
+                System.out.printf("%-10d", d[i] != null ? d[i].data : null);
+            } while (d[i] != null && (d = d[i].forwards)[i] != null);
+            System.out.println();
+            d = c;
+        }
+    }
+
+
     public static void main(String[] args) {
-        GenericSkipList<Integer> list = new GenericSkipList<>();
+        SkipList list = new SkipList();
         list.insert(1);
         list.insert(7);
         list.insert(3);
         list.insert(4);
         list.delete(7);
-        Node<Integer> node = list.find(4);
+        list.printAll_beautiful();
+        Node node = list.find(4);
         System.out.println("找到节点:" + node.data);
     }
 }
