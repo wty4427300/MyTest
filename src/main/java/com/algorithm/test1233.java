@@ -1,7 +1,5 @@
 package com.algorithm;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +16,7 @@ class Trie {
 }
 
 public class test1233 {
-    public List<String> removeSubfolders(@NotNull String[] folder) {
+    public List<String> removeSubfolders(String[] folder) {
         Trie root = new Trie();
         for (int i = 0; i < folder.length; ++i) {
             List<String> path = split(folder[i]);

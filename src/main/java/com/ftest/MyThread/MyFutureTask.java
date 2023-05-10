@@ -24,6 +24,7 @@ public class MyFutureTask<T> implements Runnable {
         try {
             if (state == State.NEW) {
                 queue.put(Thread.currentThread());
+                //状态不是执行就阻塞
                 while (state != State.DONE) {
                     condition.await();
                 }
@@ -57,5 +58,19 @@ public class MyFutureTask<T> implements Runnable {
 
     private enum State {
         NEW, DONE
+    }
+
+    public static void main(String[] args) {
+        MyFutureTask<Integer> future=new MyFutureTask<>(() -> {
+            System.out.println("执行");
+            return 999;
+        });
+        future.run();
+        try {
+            Integer integer = future.get();
+            System.out.println(integer);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
