@@ -15,9 +15,7 @@ public class Solution {
                 matrix[y][e] = matrix[s][y];
                 matrix[s][y] = temp;
             }
-            ;
         }
-        ;
     }
 
     public static void main(String[] args) {

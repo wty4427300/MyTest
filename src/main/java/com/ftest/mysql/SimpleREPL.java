@@ -1,9 +1,8 @@
 package com.ftest.mysql;
 
-import com.ftest.mysql.Command.MateCommandResult;
-import com.ftest.mysql.Command.PrepareResult;
-import com.ftest.mysql.Command.Statement;
-import com.ftest.mysql.Command.StatementType;
+import com.ftest.mysql.command.PrepareResult;
+import com.ftest.mysql.command.Statement;
+import com.ftest.mysql.command.StatementType;
 
 import java.util.Scanner;
 
