@@ -3,52 +3,54 @@ package com.ftest.aqs;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
 public class LockTest {
-    AtomicInteger state =new AtomicInteger();
-    Thread owner=new Thread();
-    BlockingQueue<Thread> queue=new LinkedBlockingDeque<>(512);
-    public boolean tryLock(){
-        if (state.get()==0){
-            if (state.compareAndSet(0,1)){
-                owner=Thread.currentThread();
+    private final AtomicInteger state = new AtomicInteger();
+    volatile AtomicReference<Thread> owner = new AtomicReference<>();
+    private BlockingQueue<Thread> queue = new LinkedBlockingDeque<>(512);
+
+    public boolean tryLock() {
+        if (state.get() == 0) {
+            if (state.compareAndSet(0, 1)) {
+                owner.set(Thread.currentThread());
                 return true;
             }
-        }else if(owner==Thread.currentThread()){
+        } else if (owner.get().equals(Thread.currentThread())) {
             //如果占锁的就是当前线程状态加1
-            state.set(state.get()+1);
+            state.set(state.get() + 1);
             return true;
         }
         return false;
     }
 
-    public void lock(){
-        if (!tryLock()){
+    public void lock() {
+        if (!tryLock()) {
             //没拿到排队
             queue.add(Thread.currentThread());
             LockSupport.park();
-            for (;;){
-                if (tryLock()){
+            for (; ; ) {
+                if (tryLock()) {
                     //如果抢到了自己把自己拿出来
                     queue.poll();
                     return;
-                }else {
+                } else {
                     LockSupport.park();
                 }
             }
         }
     }
 
-    public void unlock(){
-        if (owner!=Thread.currentThread()){
+    public void unlock() {
+        if (!owner.get().equals(Thread.currentThread())) {
             throw new RuntimeException("非法调用");
         }
-        if(state.decrementAndGet()==0){//每次减1到0释放
-            owner=Thread.currentThread();
+        if (state.decrementAndGet() == 0) {//每次减1到0释放
+            owner.set(Thread.currentThread());
             //通知其他线程
-            Thread thread=queue.peek();
-            if (thread!=null){
+            Thread thread = queue.peek();
+            if (thread != null) {
                 LockSupport.unpark(thread);
             }
         }

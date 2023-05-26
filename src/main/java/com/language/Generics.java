@@ -47,8 +47,9 @@ public class Generics {
         Class<Wrapper<List<String>>> wrapperClass = Generics.typeOf(new Wrapper<>());
         Type type1 = getGenericRuntimeType(new Wrapper<List<String>>());
         System.out.println(type1);
-        Type type2 = getGenericRuntimeType(new Wrapper<List<String>>() {});
-        Class<ArrayList<String>> genericRuntime = getGenericRuntime(new ArrayList<String>());
+        Type type2 = getGenericRuntimeType(new Wrapper<List<String>>() {
+        });
+        Class<ArrayList<Integer>> genericRuntime = getGenericRuntime(new ArrayList<>());
         System.out.println(type2);
     }
 }
