@@ -7,9 +7,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
 public class LockTest {
-    private final AtomicInteger state = new AtomicInteger();
+    AtomicInteger state = new AtomicInteger();
     volatile AtomicReference<Thread> owner = new AtomicReference<>();
-    private BlockingQueue<Thread> queue = new LinkedBlockingDeque<>(512);
+    BlockingQueue<Thread> queue = new LinkedBlockingDeque<>(512);
 
     public boolean tryLock() {
         if (state.get() == 0) {
