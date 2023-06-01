@@ -32,7 +32,10 @@ public class test2517 {
     }
 
     public static void main(String[] args) {
-        int i=Integer.MIN_VALUE;
+        int[] p=new int[]{1,3,1};
+        int k=2;
+        test2517 test2517=new test2517();
+        int i = test2517.maximumTastiness(p, k);
         System.out.println(i);
     }
 }

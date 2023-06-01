@@ -1,4 +1,4 @@
-package com.test;
+package com.ftest.aqs;
 
 import java.util.ArrayList;
 import java.util.List;
