@@ -1,7 +1,6 @@
-package com.ftest.rwlock;
+package com.ftest.lock;
 
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
-import java.util.concurrent.locks.LockSupport;
 
 public class MyReentrantLock {
     private Sync sync = new Sync();

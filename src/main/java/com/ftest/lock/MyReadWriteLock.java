@@ -1,4 +1,4 @@
-package com.ftest.rwlock;
+package com.ftest.lock;
 
 public class MyReadWriteLock {
     private int readers = 0; // 当前读锁的数量

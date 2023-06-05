@@ -1,4 +1,4 @@
-package com.ftest.rwlock;
+package com.ftest.lock;
 
 import java.util.HashMap;
 import java.util.Map;
