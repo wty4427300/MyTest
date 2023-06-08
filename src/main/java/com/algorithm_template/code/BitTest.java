@@ -1,4 +1,4 @@
-package com.test;
+package com.algorithm_template.code;
 
 public class BitTest {
     public static void main(String[] args) {

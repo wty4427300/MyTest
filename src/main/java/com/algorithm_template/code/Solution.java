@@ -1,4 +1,4 @@
-package com.test;
+package com.algorithm_template.code;
 
 /**
  * 一个关于矩阵旋转的例子

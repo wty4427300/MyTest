@@ -1,4 +1,4 @@
-package com.test;
+package com.algorithm_template.code;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

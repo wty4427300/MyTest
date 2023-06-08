@@ -1,9 +1,9 @@
-package com.test;
+package com.algorithm_template.code;
 
 /**
  * 求平方根
  */
-public class MathTest13 {
+public class SquareRoot {
 
     /**
      * @param n 待求的数
@@ -35,7 +35,7 @@ public class MathTest13 {
 
 
     public static void main(String[] args) {
-        MathTest13 mathTest13=new MathTest13();
+        SquareRoot mathTest13=new SquareRoot();
         int number = 10;
         double squareRoot = mathTest13.getSqureRoot(number, 0.000001, 10000);
         if (squareRoot == -1.0) {

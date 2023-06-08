@@ -1,4 +1,4 @@
-package com.test;
+package com.algorithm_template.code;
 
 /**
  * 快排的模板代码
