@@ -2,6 +2,7 @@ package com.ftest.lock;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class CountDownLatchTest {
@@ -19,7 +20,7 @@ public class CountDownLatchTest {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        Executor executor = Executors.newFixedThreadPool(2);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
         CountDownLatchTest test = new CountDownLatchTest();
         CountDownLatch countDownLatch = new CountDownLatch(2);
         int[] pd = new int[2];
@@ -36,5 +37,6 @@ public class CountDownLatchTest {
         countDownLatch.await();
         boolean result = test.check(pd[0], pd[1]);
         System.out.println(result);
+        executor.shutdown();
     }
 }
