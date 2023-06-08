@@ -46,11 +46,10 @@ public class CyclicBarrierTest {
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
-            futures.add(future);
         });
         CompletableFuture<Void> future1 = CompletableFuture
                 .runAsync(() -> {
-                    for (int i = 0; i < 10; i++) {
+                    for (int i = 0; i < 100000; i++) {
                         test.pos.add(test.getPOrder());
                         try {
                             cyclicBarrier.await();
@@ -62,7 +61,7 @@ public class CyclicBarrierTest {
         futures.add(future1);
         CompletableFuture<Void> future2 = CompletableFuture
                 .runAsync(() -> {
-                    for (int i = 0; i < 10; i++) {
+                    for (int i = 0; i < 100000; i++) {
                         test.dos.add(test.getDOrder());
                         try {
                             cyclicBarrier.await();
