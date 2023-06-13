@@ -11,8 +11,8 @@ public class RouterTable {
             rt = new ConcurrentHashMap<>();
 
     //根据接口名获取路由表
-    public Set<Router> get(String iface) {
-        return rt.get(iface);
+    public Set<Router> get(String iFace) {
+        return rt.get(iFace);
     }
 
     //删除路由
