@@ -1,4 +1,4 @@
-package com.concurrent.designpattern;
+package com.designpattern.pipeline.v1;
 
 public class Application {
     public static void main(String[] args) {
