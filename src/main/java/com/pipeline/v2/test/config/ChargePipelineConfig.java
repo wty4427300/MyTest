@@ -1,14 +1,12 @@
 package com.pipeline.v2.test.config;
 
-import com.pipeline.v2.EventFilter;
+import com.pipeline.v2.AbstractEventFilter;
 import com.pipeline.v2.FilterChainPipeline;
 import com.pipeline.v2.context.AbstractEventContext;
-import com.pipeline.v2.context.EventContext;
 import com.pipeline.v2.test.filters.CarInfoQueryFilter;
 import com.pipeline.v2.test.filters.JudgeCarFilter;
 import com.pipeline.v2.test.filters.LogSaveFilter;
 import com.pipeline.v2.test.filters.UserPayFilter;
-import com.pipeline.v2.test.pojo.ChargeContext;
 import com.pipeline.v2.test.service.IFacadeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +21,8 @@ public class ChargePipelineConfig {
     private IFacadeService facadeService;
 
     @Bean
-    public FilterChainPipeline<EventFilter<ChargeContext>> chargePipeline() {
-        FilterChainPipeline<EventFilter<ChargeContext>> filterChainPipeline = new FilterChainPipeline<>();
+    public FilterChainPipeline<AbstractEventFilter<AbstractEventContext>> chargePipeline() {
+        FilterChainPipeline<AbstractEventFilter<AbstractEventContext>> filterChainPipeline = new FilterChainPipeline<>();
         filterChainPipeline.addFirst("用户逻辑", userPayFilter());
         filterChainPipeline.addFirst("车辆信息判断", judgeCarFilter());
         filterChainPipeline.addFirst("车辆信息查询", carInfoQueryFilter());

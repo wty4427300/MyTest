@@ -1,8 +1,9 @@
 package com.pipeline.v2;
 
+import com.pipeline.v2.context.AbstractEventContext;
 import com.pipeline.v2.context.EventContext;
 
-public class FilterChainPipeline<T extends EventFilter<EventContext>> {
+public class FilterChainPipeline<T extends EventFilter<AbstractEventContext>> {
     private DefaultFilterChain<EventContext> last;
 
     public FilterChainPipeline() {

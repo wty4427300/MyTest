@@ -3,6 +3,7 @@ package com.pipeline.v2.test.service;
 import com.pipeline.v2.BizEnum;
 import com.pipeline.v2.EventFilter;
 import com.pipeline.v2.FilterChainPipeline;
+import com.pipeline.v2.context.AbstractEventContext;
 import com.pipeline.v2.context.EventContext;
 import com.pipeline.v2.selector.FilterSelector;
 import com.pipeline.v2.test.pojo.ChargeContext;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChargeServiceImpl implements IChargeService {
 
-    private final FilterChainPipeline<EventFilter<EventContext>> chargePipeline;
+    private final FilterChainPipeline<EventFilter<AbstractEventContext>> chargePipeline;
 
     private final ChargeFilterSelectorFactory chargeFilterSelectorFactory;
 
