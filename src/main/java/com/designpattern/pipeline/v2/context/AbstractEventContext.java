@@ -5,7 +5,7 @@ import com.designpattern.pipeline.v2.BizEnum;
 import com.designpattern.pipeline.v2.selector.FilterSelector;
 
 /**
- * @author gim
+ * 抽象上下文类
  */
 public abstract class AbstractEventContext implements EventContext {
 

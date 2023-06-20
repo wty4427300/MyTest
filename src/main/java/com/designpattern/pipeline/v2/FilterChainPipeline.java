@@ -2,13 +2,13 @@ package com.designpattern.pipeline.v2;
 
 import com.designpattern.pipeline.v2.context.EventContext;
 
-public class FilterChainPipeline<T extends EventFilter<T> & EventContext> {
-    private DefaultFilterChain<T> last;
+public class FilterChainPipeline<T extends EventFilter<EventContext>> {
+    private DefaultFilterChain<EventContext> last;
 
     public FilterChainPipeline() {
     }
 
-    public DefaultFilterChain<T> getFilterChain() {
+    public DefaultFilterChain<EventContext> getFilterChain() {
         return this.last;
     }
 
@@ -18,7 +18,6 @@ public class FilterChainPipeline<T extends EventFilter<T> & EventContext> {
     }
 
     public FilterChainPipeline<T> addFirst(String desc, T filter) {
-        System.out.println(desc);
         this.last = new DefaultFilterChain<>(this.last, filter);
         return this;
     }
