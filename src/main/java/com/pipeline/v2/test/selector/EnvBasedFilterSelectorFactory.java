@@ -7,6 +7,7 @@ import com.pipeline.v2.test.pojo.ChargeRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,8 +15,9 @@ import java.util.Collections;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@ComponentScan("com.pipeline.v2.test.config")
 public class EnvBasedFilterSelectorFactory implements ChargeFilterSelectorFactory {
 
     @Autowired

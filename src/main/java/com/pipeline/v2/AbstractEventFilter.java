@@ -7,7 +7,7 @@ import com.pipeline.v2.context.EventContext;
 /**
  * @author gim 模板方法
  */
-public abstract class AbstractEventFilter<T extends AbstractEventContext> implements EventFilter<T> {
+public abstract class AbstractEventFilter<T extends EventContext> implements EventFilter<T> {
 
     @Override
     public void doFilter(T context, EventFilterChain<T> chain) {

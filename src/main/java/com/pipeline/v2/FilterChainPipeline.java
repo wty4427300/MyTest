@@ -1,9 +1,10 @@
 package com.pipeline.v2;
 
-import com.pipeline.v2.context.AbstractEventContext;
 import com.pipeline.v2.context.EventContext;
+import org.springframework.stereotype.Component;
 
-public class FilterChainPipeline<T extends EventFilter<AbstractEventContext>> {
+@Component
+public class FilterChainPipeline<T extends AbstractEventFilter<? extends EventContext>> {
     private DefaultFilterChain<EventContext> last;
 
     public FilterChainPipeline() {
@@ -14,12 +15,12 @@ public class FilterChainPipeline<T extends EventFilter<AbstractEventContext>> {
     }
 
     public FilterChainPipeline<T> addFirst(T filter) {
-        this.last = new DefaultFilterChain<>(this.last, filter);
+        this.last = new DefaultFilterChain<>(this.last, (AbstractEventFilter<EventContext>) filter);
         return this;
     }
 
     public FilterChainPipeline<T> addFirst(String desc, T filter) {
-        this.last = new DefaultFilterChain<>(this.last, filter);
+        this.last = new DefaultFilterChain<>(this.last, (AbstractEventFilter<EventContext>) filter);
         return this;
     }
 }

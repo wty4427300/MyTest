@@ -1,9 +1,8 @@
 package com.pipeline.v2.test.service;
 
+import com.pipeline.v2.AbstractEventFilter;
 import com.pipeline.v2.BizEnum;
-import com.pipeline.v2.EventFilter;
 import com.pipeline.v2.FilterChainPipeline;
-import com.pipeline.v2.context.AbstractEventContext;
 import com.pipeline.v2.context.EventContext;
 import com.pipeline.v2.selector.FilterSelector;
 import com.pipeline.v2.test.pojo.ChargeContext;
@@ -11,14 +10,16 @@ import com.pipeline.v2.test.pojo.ChargeModel;
 import com.pipeline.v2.test.pojo.ChargeRequest;
 import com.pipeline.v2.test.selector.ChargeFilterSelectorFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.plugin.core.PluginRegistry;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@ComponentScan("com.pipeline.v2")
 public class ChargeServiceImpl implements IChargeService {
 
-    private final FilterChainPipeline<EventFilter<AbstractEventContext>> chargePipeline;
+    private final FilterChainPipeline<AbstractEventFilter<EventContext>> chargePipeline;
 
     private final ChargeFilterSelectorFactory chargeFilterSelectorFactory;
 

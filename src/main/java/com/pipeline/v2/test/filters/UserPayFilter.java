@@ -2,6 +2,7 @@ package com.pipeline.v2.test.filters;
 
 
 import com.pipeline.v2.AbstractEventFilter;
+import com.pipeline.v2.context.EventContext;
 import com.pipeline.v2.test.pojo.ChargeContext;
 import lombok.extern.slf4j.Slf4j;
 
