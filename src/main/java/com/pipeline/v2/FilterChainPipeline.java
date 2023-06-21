@@ -15,12 +15,12 @@ public class FilterChainPipeline<T extends AbstractEventFilter<? extends EventCo
     }
 
     public FilterChainPipeline<T> addFirst(T filter) {
-        this.last = new DefaultFilterChain<>(this.last, (AbstractEventFilter<EventContext>) filter);
+        this.last = new DefaultFilterChain<>(this.last, (EventFilter<EventContext>) filter);
         return this;
     }
 
     public FilterChainPipeline<T> addFirst(String desc, T filter) {
-        this.last = new DefaultFilterChain<>(this.last, (AbstractEventFilter<EventContext>) filter);
+        this.last = new DefaultFilterChain<>(this.last, (EventFilter<EventContext>) filter);
         return this;
     }
 }
