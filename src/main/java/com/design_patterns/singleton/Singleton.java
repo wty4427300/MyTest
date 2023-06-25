@@ -1,4 +1,4 @@
-package com.concurrent.singleton;
+package com.design_patterns.singleton;
 
 /**
  * 双检锁单例
