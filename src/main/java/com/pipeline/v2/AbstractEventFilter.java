@@ -1,7 +1,5 @@
 package com.pipeline.v2;
 
-
-import com.pipeline.v2.context.AbstractEventContext;
 import com.pipeline.v2.context.EventContext;
 
 /**
