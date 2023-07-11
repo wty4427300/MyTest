@@ -1,6 +1,5 @@
 package com.accesslimit.src;
 
-import com.accesslimit.src.AccessLimit;
 import com.alibaba.fastjson2.JSON;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
