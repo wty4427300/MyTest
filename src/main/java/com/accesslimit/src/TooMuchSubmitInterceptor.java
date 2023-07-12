@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +12,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
 import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class TooMuchSubmitInterceptor implements HandlerInterceptor {
 
-    @Resource(name = "stringRedisTemplate")
+    @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
     /**
