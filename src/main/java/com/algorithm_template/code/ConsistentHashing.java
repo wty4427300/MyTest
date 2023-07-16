@@ -14,18 +14,22 @@ public class ConsistentHashing {
     /**
      * 计算hash值
      */
-    private int getHash(String key) {
-        final int prime = 31;
-        int hash = 0;
-        for (char c : key.toCharArray()) {
-            hash = prime * hash + c;
-        }
-        return hash;
-    }
-
+//    private int getHash(String key) {
+//        final int prime = 31;
+//        int hash = 0;
+//        for (char c : key.toCharArray()) {
+//            hash = prime * hash + c;
+//        }
+//        return hash;
+//    }
+//
 //    private int getHash(String key) {
 //        return key.hashCode();
 //    }
+
+    private int getHash(String key) {
+        return ConsistentHashingHashFunction.hashCode(key);
+    }
 
     public void addNode(String node) {
         nodes.add(node);
