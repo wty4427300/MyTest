@@ -9,7 +9,7 @@ public class TokenBucket {
         // 模拟处理一些请求
         for (int i = 1; i <= 20; i++) {
             // 获取一个令牌，如果令牌不可用则等待
-            if (!rateLimiter.tryAcquire()){
+            if (!rateLimiter.tryAcquire()) {
                 throw new RuntimeException("请求次数太多");
             }
             // 处理请求
