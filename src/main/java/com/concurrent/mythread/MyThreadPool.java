@@ -10,6 +10,7 @@ public class MyThreadPool {
     private final BlockingQueue<Runnable> blockingQueue;
     private final List<Thread> workers;
 
+    private volatile boolean isWorker = true;
 
     public static class worker extends Thread {
         private final MyThreadPool pool;
@@ -57,10 +58,7 @@ public class MyThreadPool {
         } else {
             return false;
         }
-
     }
-
-    private volatile boolean isWorker = true;
 
     public void shutDown() {
         this.isWorker = false;

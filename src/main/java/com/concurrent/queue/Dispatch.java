@@ -31,8 +31,8 @@ class Worker extends Thread {
 
     @Override
     public void run() {
-        while (runnableQueue.size() > 0) {
-            runnableQueue.poll().run();
+        while (this.runnableQueue.size() > 0) {
+            this.runnableQueue.poll().run();
             System.out.println("task:" + Thread.currentThread().getName());
         }
     }
