@@ -23,10 +23,18 @@ public class MyThreadPool {
         public void run() {
             Runnable task = null;
             while (this.pool.isWorker || this.pool.blockingQueue.size() > 0) {
-                //阻塞方式拿
-                //task = this.pool.blockingQueue.take();
-                //非阻塞方式拿
-                task = this.pool.blockingQueue.poll();
+                try {
+                    if (this.pool.isWorker) {
+                        //阻塞方式拿
+                        task = this.pool.blockingQueue.take();
+                    } else {
+                        //非阻塞方式拿
+                        task = this.pool.blockingQueue.poll();
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    e.printStackTrace();
+                }
                 if (task != null) {
                     task.run();
                     System.out.println("task:" + Thread.currentThread().getName());
