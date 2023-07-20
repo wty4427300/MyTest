@@ -9,7 +9,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MyThreadPool {
     private final BlockingQueue<Runnable> blockingQueue;
     private final List<Thread> workers;
-
     private volatile boolean isWorker = true;
 
     public static class worker extends Thread {
@@ -21,19 +20,12 @@ public class MyThreadPool {
 
         @Override
         public void run() {
-            Runnable task = null;
+            Runnable task;
             while (this.pool.isWorker || this.pool.blockingQueue.size() > 0) {
-                try {
-                    if (this.pool.isWorker) {
-                        task = this.pool.blockingQueue.take();
-                        //阻塞方式拿
-                    } else {
-                        task = this.pool.blockingQueue.poll();
-                        //非阻塞方式拿
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                //阻塞方式拿
+                //task = this.pool.blockingQueue.take();
+                //非阻塞方式拿
+                task = this.pool.blockingQueue.poll();
                 if (task != null) {
                     task.run();
                     System.out.println("task:" + Thread.currentThread().getName());
