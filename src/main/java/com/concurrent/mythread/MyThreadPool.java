@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MyThreadPool {
@@ -20,7 +21,7 @@ public class MyThreadPool {
 
         @Override
         public void run() {
-            Runnable task;
+            Runnable task = null;
             while (this.pool.isWorker || this.pool.blockingQueue.size() > 0) {
                 //阻塞方式拿
                 //task = this.pool.blockingQueue.take();
@@ -60,5 +61,12 @@ public class MyThreadPool {
                 worker.interrupt();//强制中断这个线程
             }
         }
+    }
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        //我的线程池的测试
+        MyThreadPool myThreadPool = new MyThreadPool(10, 10);
+        myThreadPool.submit(() -> System.out.println("快乐就完事了"));
+        myThreadPool.shutDown();
     }
 }

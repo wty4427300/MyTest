@@ -1,65 +1,61 @@
 package com.concurrent.queue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class MyDispatchThreadPool {
-    private final List<Worker> workers;
-    private volatile boolean isWorker = true;
+public class MyDispatchThreadPool extends ThreadPoolExecutor {
+    private final int poolSize;
+    private final AtomicInteger nextIndex = new AtomicInteger(0);
 
-    /**
-     * 构造函数初始化线程池
-     */
     public MyDispatchThreadPool(int poolSize) {
-        this.workers = Collections.synchronizedList(new ArrayList<>());
-        for (int i = 0; i < poolSize; i++) {
-            Worker worker = new Worker(new ArrayDeque<>(), this);
-            worker.start();
-            workers.add(worker);
+        super(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(100));
+        this.poolSize = poolSize;
+    }
+
+    @Override
+    protected void beforeExecute(Thread t, Runnable r) {
+        if (r instanceof Task) {
+            int index = ((Task) r).getId() % poolSize;
+            ((Task) r).setThreadIndex(index);
         }
     }
 
-    public static class Worker extends Thread {
-        private final MyDispatchThreadPool pool;
-        private final Queue<Runnable> queue;
+    public boolean submit(int id, Runnable task) {
+        Task wrappedTask = new Task(id, task);
+        super.submit(wrappedTask);
+        return true;
+    }
 
-        public Worker(Queue<Runnable> queue, MyDispatchThreadPool pool) {
-            this.queue = queue;
-            this.pool = pool;
+    public static class Task implements Runnable {
+        private final int id;
+        private final Runnable task;
+        private int threadIndex;
+
+        public Task(int id, Runnable task) {
+            this.id = id;
+            this.task = task;
         }
 
-        public Queue<Runnable> getQueue() {
-            return queue;
+        public int getId() {
+            return id;
+        }
+
+        public void setThreadIndex(int index) {
+            this.threadIndex = index;
         }
 
         @Override
         public void run() {
-            while (this.pool.isWorker || queue.size() > 0) {
-                Runnable task = queue.poll();
-                if (task != null) {
-                    System.out.println("thread:"+Thread.currentThread().getName());
-                    task.run();
-                }
-            }
-        }
-    }
-
-    public boolean submit(String id, Runnable task) {
-        int index = id.hashCode() % this.workers.size();
-        Queue<Runnable> runnableQueue = this.workers.get(index).getQueue();
-        return runnableQueue.add(task);
-    }
-
-    public void shutDown() {
-        this.isWorker = false;
-        for (Thread worker : workers) {
-            if (worker.getState().equals(Thread.State.BLOCKED)) {
-                worker.interrupt();//强制中断这个线程
-            }
+            System.out.println("Thread Index: " + threadIndex + ", Task ID: " + id);
+            task.run();
         }
     }
 
     public static void main(String[] args) {
-        MyDispatchThreadPool pool = new MyDispatchThreadPool(3);
+        int poolSize = 3;
+        MyDispatchThreadPool pool = new MyDispatchThreadPool(poolSize);
 
         List<Message> messages = new ArrayList<>();
         messages.add(new Message(0, "order init"));
@@ -70,9 +66,10 @@ public class MyDispatchThreadPool {
         messages.add(new Message(2, "order pay"));
 
         for (Message msg : messages) {
-            pool.submit(msg.getId().toString(), () -> System.out.println(msg.getId() + ":" + msg.getMessage()));
+            pool.submit(msg.getId(), () -> System.out.println(msg.getId() + ":" + msg.getMessage()));
         }
 
-        pool.shutDown();
+        pool.shutdown();
+        System.out.println("All tasks are completed.");
     }
 }
