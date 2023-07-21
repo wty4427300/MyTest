@@ -34,37 +34,38 @@ public class MyDispatch {
             return queue;
         }
 
+//        @Override
+//        public void run() {
+//            while (this.pool.isWorker || queue.size() > 0) {
+//                Runnable task = queue.poll();
+//                if (task != null) {
+//                    task.run();
+//                }
+//            }
+//        }
+
         @Override
         public void run() {
+            Runnable task = null;
             while (this.pool.isWorker || queue.size() > 0) {
-                Runnable task = queue.poll();
+                try {
+                    if (this.pool.isWorker) {
+                        //阻塞方式拿
+                        task = this.queue.take();
+                    } else {
+                        //非阻塞方式拿
+                        task = this.queue.poll();
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    e.printStackTrace();
+                    break;
+                }
                 if (task != null) {
                     task.run();
                 }
             }
         }
-
-//        public void run() {
-//            Runnable task = null;
-//            while (this.pool.isWorker || queue.size() > 0) {
-//                try {
-//                    if (this.pool.isWorker) {
-//                        //阻塞方式拿
-//                        task = this.queue.take();
-//                    } else {
-//                        //非阻塞方式拿
-//                        task = this.queue.poll();
-//                    }
-//                } catch (InterruptedException e) {
-//                    Thread.currentThread().interrupt();
-//                    e.printStackTrace();
-//                }
-//                if (task != null) {
-//                    task.run();
-//                    System.out.println("task:" + Thread.currentThread().getName());
-//                }
-//            }
-//        }
     }
 
     public boolean submit(String id, Runnable task) {
@@ -76,7 +77,8 @@ public class MyDispatch {
     public void shutDown() {
         this.isWorker = false;
         for (Thread worker : workers) {
-            if (worker.getState().equals(Thread.State.BLOCKED) && !worker.isInterrupted()) {
+            System.out.println("thread status:" + worker.getState());
+            if (worker.getState().equals(Thread.State.BLOCKED) || worker.getState().equals(Thread.State.WAITING)) {
                 worker.interrupt();//强制中断这个线程
             }
         }
