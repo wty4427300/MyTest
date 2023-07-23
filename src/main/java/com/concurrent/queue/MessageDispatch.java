@@ -4,14 +4,14 @@ import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-public class MyDispatch {
+public class MessageDispatch {
     private final List<Worker> workers;
     private volatile boolean isWorker = true;
 
     /**
      * 构造函数初始化线程池
      */
-    public MyDispatch(int poolSize, int capacity) {
+    public MessageDispatch(int poolSize, int capacity) {
         this.workers = Collections.synchronizedList(new ArrayList<>());
         for (int i = 0; i < poolSize; i++) {
             //使用有界队列防止任务无限增长
@@ -22,10 +22,10 @@ public class MyDispatch {
     }
 
     public static class Worker extends Thread {
-        private final MyDispatch pool;
+        private final MessageDispatch pool;
         private final BlockingQueue<Runnable> queue;
 
-        public Worker(BlockingQueue<Runnable> queue, MyDispatch pool) {
+        public Worker(BlockingQueue<Runnable> queue, MessageDispatch pool) {
             this.queue = queue;
             this.pool = pool;
         }
@@ -34,6 +34,7 @@ public class MyDispatch {
             return queue;
         }
 
+//        非阻塞的方式去取，会频繁的循环，忙等待
 //        @Override
 //        public void run() {
 //            while (this.pool.isWorker || queue.size() > 0) {
@@ -50,10 +51,10 @@ public class MyDispatch {
             while (this.pool.isWorker || queue.size() > 0) {
                 try {
                     if (this.pool.isWorker) {
-                        //阻塞方式拿
+                        //工作中默认任务会不断到来，所以阻塞的方式获取，阻塞方式获取。
                         task = this.queue.take();
                     } else {
-                        //非阻塞方式拿
+                        //工作结束，执行完剩下的任务再退出，非阻塞方式拿。
                         task = this.queue.poll();
                     }
                 } catch (InterruptedException e) {
@@ -77,7 +78,6 @@ public class MyDispatch {
     public void shutDown() {
         this.isWorker = false;
         for (Thread worker : workers) {
-            System.out.println("thread status:" + worker.getState());
             if (worker.getState().equals(Thread.State.BLOCKED) || worker.getState().equals(Thread.State.WAITING)) {
                 worker.interrupt();//强制中断这个线程
             }
@@ -85,7 +85,7 @@ public class MyDispatch {
     }
 
     public static void main(String[] args) {
-        MyDispatch pool = new MyDispatch(10, 100);
+        MessageDispatch pool = new MessageDispatch(10, 100);
 
         List<Message> messages = new ArrayList<>();
         messages.add(new Message(0, "order init"));
