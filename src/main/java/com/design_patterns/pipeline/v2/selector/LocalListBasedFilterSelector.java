@@ -11,8 +11,13 @@ public class LocalListBasedFilterSelector implements FilterSelector {
 
     private List<String> filterNames = new ArrayList<>();
 
+    public LocalListBasedFilterSelector(List<String> filterNames) {
+        this.filterNames = filterNames;
+    }
+
     @Override
     public boolean matchFilter(String classSimpleName) {
+        //anyMatch表示流中是否有任何一个元素满足给定的条件
         return filterNames.stream().anyMatch(s -> Objects.equals(s, classSimpleName));
     }
 
@@ -30,9 +35,5 @@ public class LocalListBasedFilterSelector implements FilterSelector {
     }
 
     public LocalListBasedFilterSelector() {
-    }
-
-    public LocalListBasedFilterSelector(List<String> filterNames) {
-        this.filterNames = filterNames;
     }
 }

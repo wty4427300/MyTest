@@ -23,10 +23,14 @@ public class EnvBasedFilterSelectorFactory implements ChargeFilterSelectorFactor
     @Autowired
     private ChargeFilterConfigProperties properties;
 
+    /**
+     * Collections.unmodifiableList返回一个不可修改的list.
+     */
     @Override
     public FilterSelector getFilterSelector(ChargeRequest request) {
         String bizCode = request.getBizCode();
         if ("YW1".equals(bizCode)) {
+            //根据业务名返回处理器的list
             List<String> filterNames = properties.getConfigs()
                     .getOrDefault("YW1", Collections.unmodifiableList(new ArrayList<>()));
             return new LocalListBasedFilterSelector(filterNames);

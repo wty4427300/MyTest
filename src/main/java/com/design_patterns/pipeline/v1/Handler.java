@@ -16,7 +16,9 @@ public abstract class Handler {
     }
 
     public final void handle(){
+        //执行当前handle类的doHandle()
         boolean handled=doHandle();
+        //判断是否继续执行下一个节点
         if (successor!=null&&!handled){
             successor.handle();
         }

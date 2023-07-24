@@ -9,9 +9,11 @@ public abstract class AbstractEventFilter<T extends EventContext> implements Eve
 
     @Override
     public void doFilter(T context, EventFilterChain<T> chain) {
+        //匹配节点是否执行
         if (context.getFilterSelector().matchFilter(this.getClass().getSimpleName())) {
             handle(context);
         }
+        //是否执行下一个链节点
         if (context.continueChain()) {
             chain.fireNext(context);
         }
