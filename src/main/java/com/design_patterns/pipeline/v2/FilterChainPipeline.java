@@ -1,7 +1,7 @@
 package com.design_patterns.pipeline.v2;
 
 import com.design_patterns.pipeline.v2.context.EventContext;
-import com.design_patterns.pipeline.v2.test.pojo.ChargeContext;
+import com.design_patterns.pipeline.v2.filter.EventFilter;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,6 +21,7 @@ public class FilterChainPipeline<T extends EventContext, R extends EventFilter<T
     }
 
     public FilterChainPipeline<T, R> addFirst(String desc, R filter) {
+        System.out.println(desc);
         this.last = new DefaultFilterChain<>(this.last, filter);
         return this;
     }

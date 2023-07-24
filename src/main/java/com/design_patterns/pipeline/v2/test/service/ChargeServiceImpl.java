@@ -1,6 +1,6 @@
 package com.design_patterns.pipeline.v2.test.service;
 
-import com.design_patterns.pipeline.v2.EventFilter;
+import com.design_patterns.pipeline.v2.filter.EventFilter;
 import com.design_patterns.pipeline.v2.FilterChainPipeline;
 import com.design_patterns.pipeline.v2.context.EventContext;
 import com.design_patterns.pipeline.v2.selector.FilterSelector;

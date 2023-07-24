@@ -1,12 +1,11 @@
 package com.design_patterns.pipeline.v2.test.config;
 
 import com.design_patterns.pipeline.v2.FilterChainPipeline;
-import com.design_patterns.pipeline.v2.context.EventContext;
 import com.design_patterns.pipeline.v2.test.filters.CarInfoQueryFilter;
 import com.design_patterns.pipeline.v2.test.filters.JudgeCarFilter;
 import com.design_patterns.pipeline.v2.test.filters.LogSaveFilter;
 import com.design_patterns.pipeline.v2.test.filters.UserPayFilter;
-import com.design_patterns.pipeline.v2.EventFilter;
+import com.design_patterns.pipeline.v2.filter.EventFilter;
 import com.design_patterns.pipeline.v2.test.pojo.ChargeContext;
 import com.design_patterns.pipeline.v2.test.service.IFacadeService;
 import org.springframework.beans.factory.annotation.Autowired;

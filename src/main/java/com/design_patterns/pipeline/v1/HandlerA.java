@@ -1,11 +1,11 @@
 package com.design_patterns.pipeline.v1;
 
-public class HandlerA extends Handler {
+public class HandlerA extends AbstractHandler<String> {
 
     @Override
-    protected boolean doHandle() {
+    protected boolean doHandle(String context) {
         boolean handled=false;
-        System.out.println("初始化订单");
+        System.out.println(context);
         return handled;
     }
 }

@@ -1,7 +1,7 @@
 package com.design_patterns.pipeline.v2;
 
 import com.design_patterns.pipeline.v2.context.EventContext;
-import com.design_patterns.pipeline.v2.test.pojo.ChargeContext;
+import com.design_patterns.pipeline.v2.filter.EventFilter;
 
 import java.util.Objects;
 
@@ -24,10 +24,10 @@ public class DefaultFilterChain<T extends EventContext> implements EventFilterCh
     }
 
     @Override
-    public void fireNext(T ctx) {
+    public void fireNext(T context) {
         EventFilterChain<T> nextChain = this.next;
         if (Objects.nonNull(nextChain)) {
-            nextChain.handle(ctx);
+            nextChain.handle(context);
         }
     }
 }
