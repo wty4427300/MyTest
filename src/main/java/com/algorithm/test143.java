@@ -59,4 +59,9 @@ public class test143 {
             l2 = l2_tmp;
         }
     }
+
+    public static void main(String[] args) {
+        Double a=0.00;
+        System.out.println(a.equals(0.00));
+    }
 }
