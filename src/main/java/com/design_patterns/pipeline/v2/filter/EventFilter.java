@@ -1,6 +1,7 @@
-package com.design_patterns.pipeline.v2;
+package com.design_patterns.pipeline.v2.filter;
 
 
+import com.design_patterns.pipeline.v2.EventFilterChain;
 import com.design_patterns.pipeline.v2.context.EventContext;
 
 /**

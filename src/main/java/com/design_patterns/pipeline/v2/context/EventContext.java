@@ -16,7 +16,7 @@ public interface EventContext {
     BizEnum getBizCode();
 
     /**
-     * 获取过滤器选择器
+     * 获取过滤器选择器,通过一定的条件判断该处理器是否执行
      *
      * @return
      */

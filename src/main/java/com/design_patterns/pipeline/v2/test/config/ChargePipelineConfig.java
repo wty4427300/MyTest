@@ -1,14 +1,12 @@
 package com.design_patterns.pipeline.v2.test.config;
 
-import com.design_patterns.pipeline.v2.AbstractEventFilter;
 import com.design_patterns.pipeline.v2.FilterChainPipeline;
-import com.design_patterns.pipeline.v2.context.EventContext;
 import com.design_patterns.pipeline.v2.test.filters.CarInfoQueryFilter;
 import com.design_patterns.pipeline.v2.test.filters.JudgeCarFilter;
 import com.design_patterns.pipeline.v2.test.filters.LogSaveFilter;
 import com.design_patterns.pipeline.v2.test.filters.UserPayFilter;
+import com.design_patterns.pipeline.v2.filter.EventFilter;
 import com.design_patterns.pipeline.v2.test.pojo.ChargeContext;
-import com.design_patterns.pipeline.v2.EventFilter;
 import com.design_patterns.pipeline.v2.test.service.IFacadeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,17 +20,9 @@ public class ChargePipelineConfig {
     @Autowired
     private IFacadeService facadeService;
 
-    private final EventFilter<? extends EventContext> filter = new AbstractEventFilter<ChargeContext>() {
-
-        @Override
-        protected void handle(ChargeContext context) {
-
-        }
-    };
-
     @Bean
-    public FilterChainPipeline<AbstractEventFilter<ChargeContext>> chargePipeline() {
-        FilterChainPipeline<AbstractEventFilter<ChargeContext>> filterChainPipeline = new FilterChainPipeline<>();
+    public FilterChainPipeline<ChargeContext,EventFilter<ChargeContext>> chargePipeline() {
+        FilterChainPipeline<ChargeContext,EventFilter<ChargeContext>> filterChainPipeline = new FilterChainPipeline<>();
         filterChainPipeline.addFirst("用户逻辑", userPayFilter());
         filterChainPipeline.addFirst("车辆信息判断", judgeCarFilter());
         filterChainPipeline.addFirst("车辆信息查询", carInfoQueryFilter());
@@ -41,22 +31,22 @@ public class ChargePipelineConfig {
     }
 
     @Bean
-    public AbstractEventFilter<ChargeContext> carInfoQueryFilter() {
+    public EventFilter<ChargeContext> carInfoQueryFilter() {
         return new CarInfoQueryFilter(facadeService);
     }
 
     @Bean
-    public AbstractEventFilter<ChargeContext> judgeCarFilter() {
+    public EventFilter<ChargeContext> judgeCarFilter() {
         return new JudgeCarFilter();
     }
 
     @Bean
-    public AbstractEventFilter<ChargeContext> logSaveFilter() {
+    public EventFilter<ChargeContext> logSaveFilter() {
         return new LogSaveFilter();
     }
 
     @Bean
-    public AbstractEventFilter<ChargeContext> userPayFilter() {
+    public EventFilter<ChargeContext> userPayFilter() {
         return new UserPayFilter();
     }
 

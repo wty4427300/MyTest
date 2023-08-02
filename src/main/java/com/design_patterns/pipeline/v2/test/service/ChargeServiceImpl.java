@@ -1,6 +1,6 @@
 package com.design_patterns.pipeline.v2.test.service;
 
-import com.design_patterns.pipeline.v2.AbstractEventFilter;
+import com.design_patterns.pipeline.v2.filter.EventFilter;
 import com.design_patterns.pipeline.v2.FilterChainPipeline;
 import com.design_patterns.pipeline.v2.context.EventContext;
 import com.design_patterns.pipeline.v2.selector.FilterSelector;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @ComponentScan("com.pipeline.v2")
 public class ChargeServiceImpl implements IChargeService {
 
-    private final FilterChainPipeline<AbstractEventFilter<EventContext>> chargePipeline;
+    private final FilterChainPipeline<EventContext, EventFilter<EventContext>> chargePipeline;
 
     private final ChargeFilterSelectorFactory chargeFilterSelectorFactory;
 

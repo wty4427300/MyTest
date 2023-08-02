@@ -1,6 +1,6 @@
 package com.design_patterns.pipeline.v2.test.filters;
 
-import com.design_patterns.pipeline.v2.AbstractEventFilter;
+import com.design_patterns.pipeline.v2.filter.AbstractEventFilter;
 import com.design_patterns.pipeline.v2.test.pojo.Car;
 import com.design_patterns.pipeline.v2.test.pojo.ChargeContext;
 import com.design_patterns.pipeline.v2.test.pojo.ChargeModel;

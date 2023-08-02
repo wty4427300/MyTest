@@ -1,26 +1,28 @@
 package com.design_patterns.pipeline.v2;
 
 import com.design_patterns.pipeline.v2.context.EventContext;
+import com.design_patterns.pipeline.v2.filter.EventFilter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FilterChainPipeline<T extends AbstractEventFilter<? extends EventContext>> {
-    private DefaultFilterChain<EventContext> last;
+public class FilterChainPipeline<T extends EventContext, R extends EventFilter<T>> {
+    private DefaultFilterChain<T> last;
 
     public FilterChainPipeline() {
     }
 
-    public DefaultFilterChain<EventContext> getFilterChain() {
+    public DefaultFilterChain<T> getFilterChain() {
         return this.last;
     }
 
-    public FilterChainPipeline<T> addFirst(T filter) {
-        this.last = new DefaultFilterChain<>(this.last, (EventFilter<EventContext>) filter);
+    public FilterChainPipeline<T, R> addFirst(R filter) {
+        this.last = new DefaultFilterChain<>(this.last, filter);
         return this;
     }
 
-    public FilterChainPipeline<T> addFirst(String desc, T filter) {
-        this.last = new DefaultFilterChain<>(this.last, (EventFilter<EventContext>) filter);
+    public FilterChainPipeline<T, R> addFirst(String desc, R filter) {
+        System.out.println(desc);
+        this.last = new DefaultFilterChain<>(this.last, filter);
         return this;
     }
 }

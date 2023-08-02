@@ -1,9 +1,10 @@
 package com.design_patterns.pipeline.v1;
 
-public class HandlerChain {
-    private Handler head = null;
-    private Handler tail = null;
-    public void addHandler(Handler handler) {
+public class HandlerChain<T> {
+    private AbstractHandler<T> head = null;
+    private AbstractHandler<T> tail = null;
+
+    public void addHandler(AbstractHandler<T> handler) {
         handler.setSuccessor(null);
         //处理第一个链表节点
         if (head == null) {
@@ -14,9 +15,10 @@ public class HandlerChain {
         tail.setSuccessor(handler);
         tail = handler;
     }
-    public void handle() {
+
+    public void handle(T context) {
         if (head != null) {
-            head.handle();
+            head.handle(context);
         }
     }
 }

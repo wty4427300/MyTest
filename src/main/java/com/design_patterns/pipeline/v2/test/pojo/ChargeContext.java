@@ -21,8 +21,7 @@ public class ChargeContext extends AbstractEventContext {
     @Getter
     private ChargeModel chargeModel;
 
-    public ChargeContext(BizEnum bizEnum,
-                         FilterSelector selector) {
+    public ChargeContext(BizEnum bizEnum, FilterSelector selector) {
         super(bizEnum, selector);
     }
 
