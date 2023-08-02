@@ -14,18 +14,18 @@ class User {
 
 public class test12 {
     public boolean test(String s) {
-        Queue<Character> stack = new ArrayDeque<>();
+        Stack<Character> stack = new Stack<>();
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '(' || s.charAt(i) == '[' || s.charAt(i) == '{') {
                 stack.add(s.charAt(i));
             } else {
                 char c = stack.peek();
                 if (c == '(' && s.charAt(i) == ')') {
-                    stack.poll();
+                    stack.pop();
                 } else if (c == '[' && s.charAt(i) == ']') {
-                    stack.poll();
+                    stack.pop();
                 } else if (c == '{' && s.charAt(i) == '}') {
-                    stack.poll();
+                    stack.pop();
                 } else {
                     return false;
                 }
