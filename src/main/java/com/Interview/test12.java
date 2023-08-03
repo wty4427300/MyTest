@@ -1,20 +1,10 @@
-package com.test;
-
-import com.algorithm.ArrayQueue;
-import lombok.Data;
+package com.Interview;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-@Data
-class User {
-    private Long id;
-    private String name;
-}
 
 public class test12 {
     public boolean test(String s) {
-        Stack<Character> stack = new Stack<>();
+        Deque<Character> stack = new ArrayDeque<>();
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '(' || s.charAt(i) == '[' || s.charAt(i) == '{') {
                 stack.add(s.charAt(i));
@@ -39,7 +29,9 @@ public class test12 {
         String s = "()[]{}";
         boolean t1 = test12.test(s);
         System.out.println(t1);
-        List<User> userList = new ArrayList<>();
-        userList.stream().collect(Collectors.toMap(User::getId, user -> user));
+        for (int i = 0; i < s.length(); i++) {
+            System.out.println(s.charAt(i));
+        }
+        Calendar calendar=Calendar.getInstance();
     }
 }
