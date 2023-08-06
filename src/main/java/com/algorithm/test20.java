@@ -12,7 +12,7 @@ public class test20 {
         if (n%2==1){
             return false;
         }
-        Map<Character,Character> pairs=new HashMap<Character, Character>(){
+        Map<Character,Character> pairs= new HashMap<>() {
             {
                 put(')', '(');
                 put(']', '[');
