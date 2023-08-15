@@ -8,7 +8,7 @@ import java.util.Map;
 public class test833 {
     public String findReplaceString(String s, int[] indices, String[] sources, String[] targets) {
         int n = s.length(), m = indices.length;
-
+        //存储索引位需要的操作
         Map<Integer, List<Integer>> ops = new HashMap<>();
         for (int i = 0; i < m; ++i) {
             ops.putIfAbsent(indices[i], new ArrayList<>());
