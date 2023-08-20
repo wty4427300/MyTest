@@ -48,7 +48,7 @@ public class MessageDispatch {
         @Override
         public void run() {
             Runnable task = null;
-            while (this.pool.isWorker || queue.size() > 0) {
+            while (this.pool.isWorker || !queue.isEmpty()) {
                 try {
                     if (this.pool.isWorker) {
                         //工作中默认任务会不断到来，所以阻塞的方式获取，阻塞方式获取。

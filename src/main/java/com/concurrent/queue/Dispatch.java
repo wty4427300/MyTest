@@ -1,6 +1,7 @@
 package com.concurrent.queue;
 
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ class Message {
     }
 }
 
+@Getter
 class Worker extends Thread {
     private final Queue<Runnable> runnableQueue;
 
@@ -25,13 +27,9 @@ class Worker extends Thread {
         this.runnableQueue = queue;
     }
 
-    public Queue<Runnable> getRunnableQueue() {
-        return this.runnableQueue;
-    }
-
     @Override
     public void run() {
-        while (this.runnableQueue.size() > 0) {
+        while (!this.runnableQueue.isEmpty()) {
             this.runnableQueue.poll().run();
             System.out.println("task:" + Thread.currentThread().getName());
         }
