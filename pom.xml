@@ -57,6 +57,17 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
             <version>3.1.1</version>
         </dependency>
+        <!--kafka-->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+        <!-- 加入log4j2配置 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
     </dependencies>
     <!--指定version可以解决not found-->
     <build>
