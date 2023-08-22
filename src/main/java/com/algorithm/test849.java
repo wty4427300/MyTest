@@ -6,7 +6,7 @@ public class test849 {
         while (l < seats.length && seats[l] == 0) {
             l++;
         }
-        ans = Math.max(ans, l);
+        ans = l;
         while (l < seats.length) {
             int r = l + 1;
             while (r < seats.length && seats[r] == 0) {
