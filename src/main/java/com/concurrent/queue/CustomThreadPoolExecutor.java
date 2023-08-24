@@ -66,7 +66,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         messages.add(new Message(2, "order pay"));
 
         for (Message msg : messages) {
-            pool.execute(new MyTask(msg.getId().toString(), () -> System.out.println(msg.getMessage())));
+            pool.execute(new MyTask(msg.getId().toString(), () -> System.out.println(msg.getId()+":"+msg.getMessage())));
         }
 
         pool.shutdown();
