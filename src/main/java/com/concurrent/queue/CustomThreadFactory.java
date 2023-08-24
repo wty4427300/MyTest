@@ -2,7 +2,9 @@ package com.concurrent.queue;
 
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -27,18 +29,19 @@ public class CustomThreadFactory implements ThreadFactory {
 
     private final ConcurrentHashMap<Integer, Thread> threadMap = new ConcurrentHashMap<>();
 
+    @SneakyThrows
     @Override
     public Thread newThread(Runnable r) {
-        if (r instanceof MyRunnable) {
-            int id = ((MyRunnable) r).getId().hashCode() % 10;
-            return threadMap.getOrDefault(id, new Thread(r));
-        }
+        Class<? extends Runnable> aClass = r.getClass();
+        Class<?> enclosingClass = aClass.getEnclosingClass();
+        Class<?>[] declaredClasses = aClass.getDeclaredClasses();
+        Field firstTask = aClass.getDeclaredField("firstTask");
+        firstTask.setAccessible(true);
         return new Thread(r);
     }
 
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws ClassNotFoundException {
         ThreadPoolExecutor pool = new ThreadPoolExecutor(
                 10,
                 10,

@@ -48,7 +48,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     }
 
     public static void main(String[] args) {
-        CustomThreadPoolExecutor pool = new CustomThreadPoolExecutor(
+        ThreadPoolExecutor pool = new CustomThreadPoolExecutor(
                 10,
                 10,
                 1L,
@@ -65,6 +65,8 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         messages.add(new Message(2, "order init"));
         messages.add(new Message(2, "order pay"));
 
+
+        Future<Integer> submit = pool.submit(() -> 1);
         for (Message msg : messages) {
             pool.execute(new MyTask(msg.getId().toString(), () -> System.out.println(msg.getId()+":"+msg.getMessage())));
         }
