@@ -33,10 +33,10 @@ public class CustomThreadFactory implements ThreadFactory {
     @Override
     public Thread newThread(Runnable r) {
         Class<? extends Runnable> aClass = r.getClass();
-        Class<?> enclosingClass = aClass.getEnclosingClass();
-        Class<?>[] declaredClasses = aClass.getDeclaredClasses();
         Field firstTask = aClass.getDeclaredField("firstTask");
         firstTask.setAccessible(true);
+        MyTask myTask = (MyTask) firstTask.get(r);
+        int id = myTask.getId().hashCode() % 10;
         return new Thread(r);
     }
 
