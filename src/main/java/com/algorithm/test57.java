@@ -8,7 +8,7 @@ public class test57 {
         int l=newInterval[0];
         int r=newInterval[1];
         boolean placed=false;
-        List<int[]> ansList = new ArrayList<int[]>();
+        List<int[]> ansList = new ArrayList<>();
         for (int[] ints:intervals){
             if (ints[0]>r){
                 if (!placed){
