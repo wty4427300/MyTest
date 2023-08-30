@@ -9,8 +9,8 @@ import java.util.Queue;
  * 无向图
  */
 public class Graph {
-    private int v;
-    private ArrayList<Integer>[] adj;
+    private final int v;
+    private final ArrayList<Integer>[] adj;
 
     public Graph(int v) {
         this.v = v;
@@ -46,10 +46,12 @@ public class Graph {
         }
         while (queue.size() != 0) {
             int w = queue.poll();
+            //遍历邻接表
             for (int i = 0; i < adj[w].size(); i++) {
                 int q = adj[w].get(i);
                 if (!visited[q]) {
                     prev[q] = w;
+                    //遍历到终点了
                     if (q == t) {
                         return;
                     }
@@ -79,7 +81,7 @@ public class Graph {
         int[] prev = new int[v];
         //初始化遍历路径
         Arrays.fill(prev, -1);
-        recurDfs(s, t, visited, prev);
+        this.recurDfs(s, t, visited, prev);
         this.print(prev, s, t);
     }
 
