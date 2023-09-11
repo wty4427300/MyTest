@@ -33,11 +33,16 @@ public class CustomThreadFactory implements ThreadFactory {
     @Override
     public Thread newThread(Runnable r) {
         Class<? extends Runnable> aClass = r.getClass();
-        Class<?> enclosingClass = aClass.getEnclosingClass();
-        Class<?>[] declaredClasses = aClass.getDeclaredClasses();
-        Field firstTask = aClass.getDeclaredField("firstTask");
-        firstTask.setAccessible(true);
-        return new Thread(r);
+        Field firstTask = null;
+        try {
+            firstTask = aClass.getDeclaredField("firstTask");
+            firstTask.setAccessible(true);
+            MyTask myTask = (MyTask) firstTask.get(r);
+            int id = myTask.getId().hashCode() % 10;
+            return threadMap.getOrDefault(id, new Thread(r));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
