@@ -22,7 +22,7 @@ public class MyThreadPool {
         @Override
         public void run() {
             Runnable task = null;
-            while (this.pool.isWorker || this.pool.blockingQueue.size() > 0) {
+            while (this.pool.isWorker || !this.pool.blockingQueue.isEmpty()) {
                 try {
                     if (this.pool.isWorker) {
                         //阻塞方式拿
