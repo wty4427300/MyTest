@@ -1,7 +1,10 @@
 package com.algorithm;
 
 public class test307 {
-
+    public static void main(String[] args) {
+        NumArray array=new NumArray(new int[]{1, 2, 3, 4, 5});
+        System.out.println(array);
+    }
 }
 
 class NumArray {
@@ -9,17 +12,11 @@ class NumArray {
     private final int[] nums;
 
     //x的最低非零位
-    //例子1100 & 0100 =0100
+    //取反：0011
+    //加1：0100
+    //1100 & 0100 =0100
     int lowBit(int x) {
         return x & -x;
-    }
-
-    int query(int x) {
-        int ans = 0;
-        for (int i = x; i > 0; i -= lowBit(i)) {
-            ans += tree[i];
-        }
-        return ans;
     }
 
     public NumArray(int[] nums) {
