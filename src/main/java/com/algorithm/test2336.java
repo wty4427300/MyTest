@@ -11,7 +11,7 @@ class SmallestInfiniteSet {
 
     public SmallestInfiniteSet() {
         thres = 1;
-        set = new TreeSet<Integer>();
+        set = new TreeSet<>();
     }
 
     public int popSmallest() {
