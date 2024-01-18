@@ -19,7 +19,7 @@ public class MultiThreadedTransaction {
     @Transactional
     public void test() {
         //获取主线程连接
-        ConnectionHolder connectionHolder = (ConnectionHolder) org.springframework.transaction.support.TransactionSynchronizationManager.getResource(dataSource);
+        ConnectionHolder connectionHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
         //CompletableFuture方式
         CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> {
             //子线程绑定主线程连接
