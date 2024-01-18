@@ -4,6 +4,9 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 三个线程顺序打印
+ */
 public class PrintABC {
     private final Lock lock = new ReentrantLock();
     private final Condition conditionA = lock.newCondition();
