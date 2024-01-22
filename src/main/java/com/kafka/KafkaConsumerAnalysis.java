@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -29,12 +31,13 @@ public class KafkaConsumerAnalysis {
         return props;
     }
 
-    public static void main(String[] args) {
+    /**
+     * 普通消费一下
+     */
+    public void test1() {
         Properties props = initConfig();
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(List.of(topic));
-
-        try {
+        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
+            consumer.subscribe(List.of(topic));
             while (isRunning.get()) {
                 ConsumerRecords<String, String> records =
                         consumer.poll(Duration.ofMillis(1000));
@@ -49,8 +52,19 @@ public class KafkaConsumerAnalysis {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            consumer.close();
         }
+    }
+
+    public void test2() {
+        Properties props = initConfig();
+        TopicPartition tp = new TopicPartition(topic, 0);
+        try(KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)){
+            consumer.assign(List.of(tp));
+        }
+    }
+
+    public static void main(String[] args) {
+        KafkaConsumerAnalysis kafkaConsumer = new KafkaConsumerAnalysis();
+        kafkaConsumer.test1();
     }
 }
