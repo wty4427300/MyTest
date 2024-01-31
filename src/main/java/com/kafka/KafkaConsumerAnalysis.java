@@ -247,12 +247,91 @@ public class KafkaConsumerAnalysis {
                     //commit offset.
                 }
             } catch (WakeupException e) {
-                // ingore the error
+                // ignore the error
             } catch (Exception e) {
                 // do some logic process.
-            } finally {
-                // maybe commit offset.
-                consumer.close();
+            }
+        }
+    }
+
+    /**
+     * 使用seek()从特定位置开始消费,比如紧接着上次的消费位移
+     * seek() 方法只能重置消费者分配到的分区的消费位置，而分区的分配是在 poll() 方法的调用过程中实现的。
+     * 也就是说，在执行 seek() 方法之前需要先执行一次 poll() 方法，等到分配到分区之后才可以重置消费位置。
+     * 如果消费者未分配到partition就调用seek()会报IllegalStateException错误
+     */
+    public void test10() {
+        Properties props = initConfig();
+        //这里自动调用close
+        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
+            consumer.subscribe(List.of(topic));
+            try {
+                while (isRunning.get()) {
+                    //需要先调用一次poll,Duration不能为0
+                    Set<TopicPartition> assignment = new HashSet<>();
+                    while (assignment.isEmpty()) {
+                        //如果不为0，则说明已经成功分配到了分区
+                        consumer.poll(Duration.ofMillis(100));
+                        assignment = consumer.assignment();
+                    }
+                    for (TopicPartition tp : assignment) {
+                        consumer.seek(tp, 10);
+                    }
+                    while (true) {
+                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+                        //consume the record.
+                    }
+                }
+            } catch (WakeupException e) {
+                // ignore the error
+            } catch (Exception e) {
+                log.error("error", e);
+            }
+        }
+    }
+
+    /**
+     * 从上次的消费位置开始消费
+     * endOffsets
+     * 对应的就有beginningOffsets,但它不会一直是0,
+     * 因为日志清理会清除老的数据
+     * public void seekToBeginning(Collection<TopicPartition> partitions)
+     * public void seekToEnd(Collection<TopicPartition> partitions)
+     * 也可以通过kafka提供的这两个方法从开头或者结尾消费,更加简洁
+     * public Map<TopicPartition, OffsetAndTimestamp> offsetsForTimes(
+     * Map<TopicPartition, Long> timestampsToSearch)
+     * public Map<TopicPartition, OffsetAndTimestamp> offsetsForTimes(
+     * Map<TopicPartition, Long> timestampsToSearch,
+     * Duration timeout)
+     * 通过这些方法可以追溯到具体的时间开始消费,map key为分区,value为时间戳
+     */
+    public void test11() {
+        Properties props = initConfig();
+        //这里自动调用close
+        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
+            consumer.subscribe(List.of(topic));
+            try {
+                while (isRunning.get()) {
+                    //需要先调用一次poll,Duration不能为0
+                    Set<TopicPartition> assignment = new HashSet<>();
+                    while (assignment.isEmpty()) {
+                        //如果不为0，则说明已经成功分配到了分区
+                        consumer.poll(Duration.ofMillis(100));
+                        assignment = consumer.assignment();
+                    }
+                    Map<TopicPartition, Long> offsets = consumer.endOffsets(assignment);
+                    for (TopicPartition tp : assignment) {
+                        consumer.seek(tp, offsets.get(tp));
+                    }
+                    while (true) {
+                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+                        //consume the record.
+                    }
+                }
+            } catch (WakeupException e) {
+                // ignore the error
+            } catch (Exception e) {
+                log.error("error", e);
             }
         }
     }
