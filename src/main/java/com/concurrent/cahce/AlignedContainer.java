@@ -2,11 +2,23 @@ package com.concurrent.cahce;
 
 import sun.misc.Unsafe;
 
+import java.lang.reflect.Field;
+
 /**
  * 尝试写一个字节对齐的容器，虽然并没啥用
  */
 public class AlignedContainer<T> {
-    private static final Unsafe UNSAFE = Unsafe.getUnsafe();
+    public static Unsafe UNSAFE = null;
+
+    static {
+        try {
+            Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
+            UNSAFE = (Unsafe) theUnsafe.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static final long BASE_OFFSET = UNSAFE.arrayBaseOffset(Object[].class);
     private static final int ELEMENT_SIZE = 8; // 8 bytes alignment, you can change this as needed
     private final Object[] buffer;
