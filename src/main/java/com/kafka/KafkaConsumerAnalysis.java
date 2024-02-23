@@ -26,6 +26,9 @@ public class KafkaConsumerAnalysis {
         props.put("bootstrap.servers", brokerList);
         props.put("group.id", groupId);
         props.put("client.id", "consumer.client.id.demo");
+        //开启拦截器
+        props.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG,
+                ConsumerInterceptorTest.class.getName());
         return props;
     }
 
