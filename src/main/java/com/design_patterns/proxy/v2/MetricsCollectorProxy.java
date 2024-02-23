@@ -15,19 +15,25 @@ public class MetricsCollectorProxy {
     }
 
     public Object createProxy(Object proxiedObject) {
+        //获取实现了接口的所有类
         Class<?>[] interfaces = proxiedObject.getClass().getInterfaces();
         DynamicProxyHandler handler = new DynamicProxyHandler(proxiedObject);
         return Proxy.newProxyInstance(proxiedObject.getClass().getClassLoader(), interfaces, handler);
     }
 
-    private static class DynamicProxyHandler implements InvocationHandler {
-        private final Object proxiedObject;
-
-        public DynamicProxyHandler(Object proxiedObject) {
+    private record DynamicProxyHandler(Object proxiedObject) implements InvocationHandler {
+        private DynamicProxyHandler(Object proxiedObject) {
             this.proxiedObject = proxiedObject;
             System.out.println("初始化代理类");
         }
 
+        /**
+         * @param proxy  被代理对象
+         * @param method 表示被调用的方法对象
+         * @param args   方法入參
+         * @return
+         * @throws Throwable
+         */
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             System.out.println("执行代理方法");
@@ -44,6 +50,6 @@ public class MetricsCollectorProxy {
     public static void main(String[] args) {
         MetricsCollectorProxy proxy = new MetricsCollectorProxy();
         IUserController userController = (IUserController) proxy.createProxy(new UserController());
-        userController.login("小王","123456");
+        userController.login("小王", "123456");
     }
 }
