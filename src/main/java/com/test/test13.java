@@ -11,6 +11,6 @@ class UserT{
 public class test13 {
 
     public static void main(String[] args) {
-
+        UserT userT=new UserT();
     }
 }
