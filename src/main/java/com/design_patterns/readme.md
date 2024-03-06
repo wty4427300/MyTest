@@ -20,3 +20,7 @@
 # [prototype](prototype)
 
 原型模式,深浅拷贝
+
+# [composite](composite)
+
+组合模式
