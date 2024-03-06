@@ -1,6 +1,6 @@
 package com.fee.rule;
 
-import com.fee.BaseEnum;
+import com.fee.base.BaseEnum;
 
 import java.util.Optional;
 

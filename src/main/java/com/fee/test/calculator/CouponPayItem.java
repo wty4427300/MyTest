@@ -1,4 +1,4 @@
-package com.fee.calculator;
+package com.fee.test.calculator;
 
 import com.fee.pay.AbstractPayItem;
 import com.fee.pay.PayGroup;

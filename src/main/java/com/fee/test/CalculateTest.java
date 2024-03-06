@@ -1,10 +1,10 @@
 package com.fee.test;
 
-import com.fee.FeeCalculate;
-import com.fee.FeeItem;
-import com.fee.FeeItemType;
-import com.fee.calculator.ActivityCalculator;
-import com.fee.calculator.CouponCalculator;
+import com.fee.base.FeeCalculate;
+import com.fee.base.FeeItem;
+import com.fee.base.FeeItemType;
+import com.fee.test.calculator.ActivityCalculator;
+import com.fee.test.calculator.CouponCalculator;
 import com.fee.pay.PayItem;
 import com.google.common.collect.Lists;
 

@@ -1,10 +1,10 @@
 package com.fee.rule.calculator;
 
 import cn.hutool.core.util.NumberUtil;
-import com.fee.AbstractCalculator;
-import com.fee.FeeCalculate;
-import com.fee.FeeItemType;
-import com.fee.Unique;
+import com.fee.base.AbstractCalculator;
+import com.fee.base.FeeCalculate;
+import com.fee.base.FeeItemType;
+import com.fee.base.Unique;
 import com.fee.pay.PayGroup;
 import com.fee.pay.PayItem;
 import com.fee.pay.PayType;

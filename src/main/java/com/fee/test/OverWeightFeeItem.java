@@ -1,7 +1,7 @@
 package com.fee.test;
 
-import com.fee.AbstractFeeItem;
-import com.fee.FeeItemType;
+import com.fee.base.AbstractFeeItem;
+import com.fee.base.FeeItemType;
 
 import java.math.BigDecimal;
 

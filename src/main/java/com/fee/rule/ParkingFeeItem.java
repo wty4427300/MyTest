@@ -1,8 +1,8 @@
 package com.fee.rule;
 
 
-import com.fee.FeeItem;
-import com.fee.FeeItemType;
+import com.fee.base.FeeItem;
+import com.fee.base.FeeItemType;
 import com.fee.rule.context.OrderInfo;
 
 import java.math.BigDecimal;

@@ -1,8 +1,8 @@
-package com.fee.calculator;
+package com.fee.test.calculator;
 
-import com.fee.AbstractCalculator;
-import com.fee.FeeCalculate;
-import com.fee.FeeItemType;
+import com.fee.base.AbstractCalculator;
+import com.fee.base.FeeCalculate;
+import com.fee.base.FeeItemType;
 import com.fee.pay.PayItem;
 import com.fee.test.CalculateType;
 import com.fee.test.OrderInfo;
@@ -13,18 +13,18 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-public class ActivityCalculator extends AbstractCalculator<OrderInfo> {
+public class CouponCalculator extends AbstractCalculator<OrderInfo> {
 
-  public ActivityCalculator(FeeCalculate<OrderInfo> feeCalculate) {
-    super(feeCalculate, CalculateType.ACTIVITY);
+  public CouponCalculator(FeeCalculate<OrderInfo> feeCalculate) {
+    super(feeCalculate, CalculateType.COUPON);
   }
 
   @Override
   protected Map<FeeItemType, BigDecimal> currentPayItem(Map<FeeItemType, BigDecimal> left,
-                                                        OrderInfo o) {
+      OrderInfo o) {
     Map<FeeItemType, BigDecimal> map = Maps.newHashMap();
-    map.put(FeeItemType.SERVICE_FEE, new BigDecimal("4"));
-    System.out.println("活动抵扣了4元费用");
+    map.put(FeeItemType.SERVICE_FEE, new BigDecimal("5"));
+    System.out.println("劵抵扣了5元费用");
     return map;
   }
 
@@ -32,9 +32,9 @@ public class ActivityCalculator extends AbstractCalculator<OrderInfo> {
   protected Map<FeeItemType, List<PayItem>> payItemList() {
     Map<FeeItemType, List<PayItem>> map = Maps.newHashMap();
     List<PayItem> payItems = Lists.newArrayList();
-    ActivityPayItem ap = new ActivityPayItem(new BigDecimal(4));
-    ap.setActivityName("节日活动");
-    payItems.add(ap);
+    CouponPayItem cp = new CouponPayItem(new BigDecimal(5));
+    cp.setCouponCode("C1234528");
+    payItems.add(cp);
     map.put(FeeItemType.SERVICE_FEE, payItems);
     return map;
   }

@@ -1,4 +1,4 @@
-package com.fee;
+package com.fee.base;
 
 /**
  * 计算器唯一编码

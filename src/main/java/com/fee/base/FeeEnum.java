@@ -1,4 +1,4 @@
-package com.fee;
+package com.fee.base;
 
 import java.util.Optional;
 

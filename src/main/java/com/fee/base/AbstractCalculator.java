@@ -1,4 +1,4 @@
-package com.fee;
+package com.fee.base;
 
 import cn.hutool.core.util.NumberUtil;
 import com.fee.pay.PayItem;

@@ -1,4 +1,4 @@
-package com.fee;
+package com.fee.base;
 
 public interface BaseEnum<T extends Enum<T> & BaseEnum<T>> {
 

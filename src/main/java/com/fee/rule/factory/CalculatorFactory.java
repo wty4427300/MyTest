@@ -1,6 +1,6 @@
 package com.fee.rule.factory;
 
-import com.fee.FeeCalculate;
+import com.fee.base.FeeCalculate;
 import com.fee.rule.FeeRule;
 import com.fee.rule.FeeRuleType;
 import com.fee.rule.FreeTimeRule;

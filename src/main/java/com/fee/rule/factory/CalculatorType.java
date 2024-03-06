@@ -1,8 +1,8 @@
 package com.fee.rule.factory;
 
 
-import com.fee.BaseEnum;
-import com.fee.Unique;
+import com.fee.base.BaseEnum;
+import com.fee.base.Unique;
 
 import java.util.Optional;
 
