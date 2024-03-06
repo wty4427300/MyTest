@@ -5,9 +5,7 @@ import com.fee.Unique;
 
 import java.util.Optional;
 
-/**
- * @author gim 2021/12/6 8:40 下午
- */
+
 public enum CalculateType implements BaseEnum<CalculateType>, Unique {
 
   COUPON(1, "优惠劵计算器"),

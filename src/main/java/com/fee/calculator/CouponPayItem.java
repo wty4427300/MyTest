@@ -8,9 +8,6 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-/**
- * @author gim 2021/12/6 8:42 下午
- */
 @Setter
 @Getter
 public class CouponPayItem extends AbstractPayItem {

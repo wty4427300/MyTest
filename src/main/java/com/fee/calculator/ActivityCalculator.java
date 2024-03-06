@@ -13,9 +13,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author gim 2021/12/6 8:44 下午
- */
 public class ActivityCalculator extends AbstractCalculator<OrderInfo> {
 
   public ActivityCalculator(FeeCalculate<OrderInfo> feeCalculate) {

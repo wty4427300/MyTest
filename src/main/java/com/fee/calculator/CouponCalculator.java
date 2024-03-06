@@ -13,9 +13,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author gim 2021/12/6 8:30 下午
- */
 public class CouponCalculator extends AbstractCalculator<OrderInfo> {
 
   public CouponCalculator(FeeCalculate<OrderInfo> feeCalculate) {

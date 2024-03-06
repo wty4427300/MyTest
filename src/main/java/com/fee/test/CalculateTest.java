@@ -12,9 +12,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author gim 2021/12/6 9:05 下午
- */
 public class CalculateTest {
 
     public static void main(String[] args) {

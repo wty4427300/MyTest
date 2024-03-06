@@ -1,9 +1,5 @@
 package com.fee;
 
-/**
- * @author Gim
- * @Date 2019-09-12
- */
 public interface BaseEnum<T extends Enum<T> & BaseEnum<T>> {
 
   /**
