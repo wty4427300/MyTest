@@ -19,6 +19,7 @@ public class FeeCalculateTest {
 
 
     public void testFee() {
+        //初始化规则
         List<FeeRule> ruleList = Lists.newArrayList();
         FreeTimesRule freeTimesRule = new FreeTimesRule(new BigDecimal(0), FeeRuleType.FREE_TIMES, 3);
         FreeTimeRule freeTimeRule = new FreeTimeRule(new BigDecimal(1), FeeRuleType.FREE_TIME, 1);
@@ -30,7 +31,11 @@ public class FeeCalculateTest {
         ruleList.add(plusRule);
         ruleList.add(maxLimitRule);
 
+        //排序规则
+        List<FeeRule> sortRules = ruleList.stream().sorted(Comparator.comparingInt(FeeRule::getOrder))
+                .toList();
 
+        //初始化支付项
         List<FeeItem<OrderInfo>> payItemList = Lists.newArrayList();
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setCarNo("dddd");
@@ -41,14 +46,13 @@ public class FeeCalculateTest {
         payItemList.add(parkingFeeItem);
 
         //核心流程
-
-        List<FeeRule> sortRules = ruleList.stream().sorted(Comparator.comparingInt(FeeRule::getOrder))
-                .toList();
-        FeeCalculate calculate = null;
+        FeeCalculate<OrderInfo> calculate = null;
         for (FeeRule feeRule : sortRules) {
+            //根据规则类型获取对应的计算器类型，生成FeeCalculate
             calculate = CalculatorFactory.getFeeCalculateByRuleType(calculate, feeRule);
         }
-
+        //计算费用
+        assert calculate != null;
         Map<FeeItemType, BigDecimal> waitPay = calculate.calculateWaitPay(payItemList);
 
         BigDecimal waitPayMoney = waitPay.get(FeeItemType.SERVICE_FEE);
@@ -58,8 +62,7 @@ public class FeeCalculateTest {
 
         MapUtils.debugPrint(System.out, "console", map);
         List<PayItem> payList = map.get(FeeItemType.SERVICE_FEE);
-        payList.stream()
-                .forEach(payItem -> {
+        payList.forEach(payItem -> {
                     System.out.println(payItem.getMoney());
                     System.out.println(payItem.getPayType());
                     System.out.println(payItem.getPayGroup());

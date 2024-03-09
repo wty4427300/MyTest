@@ -9,13 +9,14 @@ import com.fee.rule.calculator.FreeTimeCalculator;
 import com.fee.rule.calculator.FreeTimesCalculator;
 import com.fee.rule.calculator.MaxLimitCalculator;
 import com.fee.rule.calculator.PlusRuleCalculator;
+import com.fee.rule.context.OrderInfo;
 
 import java.util.Objects;
 
 
 public class CalculatorFactory {
 
-  public static FeeCalculate getFeeCalculateByRuleType(FeeCalculate calculate, FeeRule rule) {
+  public static FeeCalculate<OrderInfo> getFeeCalculateByRuleType(FeeCalculate<OrderInfo> calculate, FeeRule rule) {
     if (Objects.equals(FeeRuleType.FREE_TIME, rule.getRuleType())) {
       FreeTimeRule time = (FreeTimeRule) rule;//这里可以强制转化
       return new FreeTimeCalculator(calculate, CalculatorType.FREE_TIME, time.getConfigValue().intValue());
