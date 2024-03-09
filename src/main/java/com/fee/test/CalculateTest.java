@@ -3,9 +3,9 @@ package com.fee.test;
 import com.fee.base.FeeCalculate;
 import com.fee.base.FeeItem;
 import com.fee.base.FeeItemType;
+import com.fee.pay.PayItem;
 import com.fee.test.calculator.ActivityCalculator;
 import com.fee.test.calculator.CouponCalculator;
-import com.fee.pay.PayItem;
 import com.google.common.collect.Lists;
 
 import java.math.BigDecimal;
@@ -19,7 +19,7 @@ public class CalculateTest {
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setTradeFlowNo("T0323423432");
         orderInfo.setOrderType("普通订单");
-        orderInfo.setPayAmount(new BigDecimal(0));
+        orderInfo.setPayAmount(new BigDecimal(String.valueOf(BigDecimal.ZERO)));
         orderInfo.setServiceFee(new BigDecimal(20));
         //初始化服务费用
         List<FeeItem<OrderInfo>> list = Lists.newArrayList();
@@ -40,7 +40,7 @@ public class CalculateTest {
                 sb.append("支付金额:").append(p.getMoney()).append("元");
                 sb.append(" ! ").append("\n");
             });
-            System.out.println("已经抵扣:\n" + k.getName()+"\n" + sb);
+            System.out.println("已经抵扣:\n" + k.getName() + "\n" + sb);
         });
     }
 
