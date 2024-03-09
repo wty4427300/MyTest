@@ -9,8 +9,8 @@ import java.util.Optional;
 public enum FeeItemType implements BaseEnum<FeeItemType> {
 
     SERVICE_FEE(1, "服务费"),
-    ELECTRIC_FEE(2, "电费"),
-    OVER_WEIGHT_FEE(3, "超重费"),
+    POSTAGE_FEE(2, "邮费"),
+    PACK_FEE(3, "打包费"),
     OVER_TIME_FEE(4, "超时费");
 
     FeeItemType(Integer code, String name) {

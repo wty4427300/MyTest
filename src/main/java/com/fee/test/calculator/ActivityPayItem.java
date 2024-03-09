@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 @Getter
 public class ActivityPayItem extends AbstractPayItem {
 
-  public ActivityPayItem(BigDecimal money) {
-    super(money, PayType.ACTIVITY, PayGroup.COUPON);
-  }
+    public ActivityPayItem(BigDecimal money) {
+        super(money, PayType.WECHAT, PayGroup.THIRD_PAY);
+    }
 
-  private String activityName;
+    private String activityName;
 }

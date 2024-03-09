@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public class CouponPayItem extends AbstractPayItem {
 
   public CouponPayItem(BigDecimal money) {
-    super(money, PayType.COIN, PayGroup.COUPON);
+    super(money, PayType.WECHAT, PayGroup.THIRD_PAY);
   }
 
   private String couponCode;

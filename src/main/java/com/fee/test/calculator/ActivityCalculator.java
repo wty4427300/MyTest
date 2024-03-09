@@ -13,12 +13,18 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 服务费抵扣活动
+ */
 public class ActivityCalculator extends AbstractCalculator<OrderInfo> {
 
   public ActivityCalculator(FeeCalculate<OrderInfo> feeCalculate) {
     super(feeCalculate, CalculateType.ACTIVITY);
   }
 
+  /**
+   * 算子抵扣金额
+   */
   @Override
   protected Map<FeeItemType, BigDecimal> currentPayItem(Map<FeeItemType, BigDecimal> left,
                                                         OrderInfo o) {

@@ -43,13 +43,16 @@ public abstract class AbstractCalculator<O> implements FeeCalculate<O> {
 
     @Override
     public Map<FeeItemType, List<PayItem>> payItemList(List<FeeItem<O>> list) {
+        //初始化算子的支付项
         Map<FeeItemType, List<PayItem>> map;
         if (Objects.nonNull(feeCalculate) && Objects.nonNull(feeCalculate.payItemList(list))) {
             map = feeCalculate.payItemList(list);
         } else {
             map = Maps.newHashMap();
         }
+        //获取已经存在的支付项
         Map<FeeItemType, List<PayItem>> currentList = payItemList();
+        //合并算子付费项
         if (Objects.nonNull(currentList) && !currentList.isEmpty()) {
             currentList.forEach((key, value) -> {
                 List<PayItem> tempList = map.getOrDefault(key, Lists.newArrayList());
@@ -64,6 +67,7 @@ public abstract class AbstractCalculator<O> implements FeeCalculate<O> {
     public Map<FeeItemType, BigDecimal> calculateWaitPay(List<FeeItem<O>> list) {
         //如果没有上层包装，那么直接返回订单的实际金额减去当前抵扣的金额
         if (Iterables.isEmpty(list)) {
+            //计费项为空
             throw new RuntimeException(FeeEnum.FEE_ITEM_EMPTY.getName());
         }
         Map<FeeItemType, BigDecimal> leftMap = Maps.newHashMap();
@@ -73,15 +77,21 @@ public abstract class AbstractCalculator<O> implements FeeCalculate<O> {
             }
             Map<FeeItemType, BigDecimal> currentDeduct = currentPayItem(leftMap,
                     list.get(0).getOrderInfo());
-            currentDeduct.forEach((key, value) -> leftMap.put(key, NumberUtil.sub(leftMap.get(key), value)));
+            //合并费用
+            currentDeduct.forEach(
+                    (key, value) -> leftMap.put(key, NumberUtil.sub(leftMap.get(key), value))
+            );
             return leftMap;
         } else {
+            //存在下一个算子，流程未完
             Map<FeeItemType, BigDecimal> left = feeCalculate.calculateWaitPay(list);
             //如果有任何一个
             Optional<BigDecimal> greaterThanZero = left.values().stream()
                     .toList().stream()
+                    //过滤出所有不为零的费用
                     .filter(s -> NumberUtil.isGreater(s, BigDecimal.ZERO))
                     .findFirst();
+            //算子无抵扣项直接返回
             if (greaterThanZero.isEmpty()) {
                 return left;
             }
@@ -90,10 +100,12 @@ public abstract class AbstractCalculator<O> implements FeeCalculate<O> {
             for (FeeItem<O> item : list) {
                 //如果当前有抵扣
                 if (Objects.nonNull(current.get(item.getFeeItemType()))) {
+                    //超过剩余支付金额，抛出异常
                     if (NumberUtil.isGreater(current.get(item.getFeeItemType()),
                             left.get(item.getFeeItemType()))) {
                         throw new RuntimeException(FeeEnum.AMOUNT_GREATER_ERROR.getName());
                     }
+                    //正常抵扣
                     temp.put(item.getFeeItemType(),
                             NumberUtil.sub(left.get(item.getFeeItemType()), current.get(item.getFeeItemType())));
                 } else {
