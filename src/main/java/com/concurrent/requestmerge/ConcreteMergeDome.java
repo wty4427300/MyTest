@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @Data
 class Test {
@@ -30,11 +31,16 @@ public class ConcreteMergeDome extends AbstractMergeService {
     protected void dispatchResultToFuture(Request request, Object result) {
         Test test = (Test) result;
         Map<String, Object> map = new HashMap<>();
-        if (request.getCode().equals("a")) {
-            map.put("a", test.getA());
-        } else {
-            map.put("b", test.getB());
-        }
+        map.put("a", test.getA());
+        map.put("b", test.getB());
         request.getFuture().complete(map);
+    }
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        ConcreteMergeDome mergeDome=new ConcreteMergeDome();
+        Object a = mergeDome.query("a");
+        System.out.println(a);
+        Object b = mergeDome.query("b");
+        System.out.println(b);
     }
 }

@@ -14,7 +14,7 @@ import java.util.concurrent.*;
 public abstract class AbstractMergeService {
 
     //存放在配置中心
-    private boolean needMerge;
+    private boolean needMerge = true;
 
     private LinkedBlockingQueue<Request> queue = new LinkedBlockingQueue<>();
 
