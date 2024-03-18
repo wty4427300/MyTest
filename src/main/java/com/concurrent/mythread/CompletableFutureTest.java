@@ -16,7 +16,12 @@ public class CompletableFutureTest {
             System.out.println("前两步ok");
             return "END"+tf+a;
         });
+        CompletableFuture<String> exceptionally = f3.exceptionally(e -> {
+            e.printStackTrace();
+            return "你好";
+        });
         f3.join();
-        
+        String s = exceptionally.get();
+        System.out.println(s);
     }
 }
