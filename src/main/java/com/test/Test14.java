@@ -48,5 +48,6 @@ public class Test14 {
         } else {
             System.out.println("验证失败：发现以下重复的 sum 值：" + duplicates);
         }
+        HashMap map = new HashMap<>();
     }
 }
