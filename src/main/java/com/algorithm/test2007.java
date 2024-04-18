@@ -1,11 +1,7 @@
 package com.algorithm;
 
-import cn.hutool.core.collection.CollectionUtil;
-
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.stream.IntStream;
 
 public class test2007 {
     public int[] findOriginalArray(int[] changed) {
