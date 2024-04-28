@@ -9,6 +9,11 @@
     <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
+      <option name="url" value="http://maven.it.qihoo.net/repository/maven-public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Central Repository" />
       <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
     <remote-repository>
@@ -50,6 +55,11 @@
       <option name="id" value="beachlanding-dental-dental-pojo" />
       <option name="name" value="dental-pojo" />
       <option name="url" value="https://beachlanding-maven.pkg.coding.net/repository/dental/dental-pojo/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="nexus-repository" />
+      <option name="name" value="nexus-repository" />
+      <option name="url" value="http://maven.it.qihoo.net/repository/maven-public/" />
     </remote-repository>
   </component>
 </project>
