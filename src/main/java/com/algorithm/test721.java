@@ -4,7 +4,9 @@ import java.util.*;
 
 public class test721 {
     public List<List<String>> accountsMerge(List<List<String>> accounts) {
+        //邮件对应的索引
         Map<String, Integer> emailToIndex = new HashMap<>();
+        //邮件对应的用户名
         Map<String, String> emailToName = new HashMap<>();
         int emailsCount = 0;
         for (List<String> account : accounts) {
@@ -13,7 +15,9 @@ public class test721 {
             for (int i = 1; i < size; i++) {
                 String email = account.get(i);
                 if (!emailToIndex.containsKey(email)) {
+                    //初始化邮件，索引
                     emailToIndex.put(email, emailsCount++);
+                    //初始化邮件，用户名
                     emailToName.put(email, name);
                 }
             }
@@ -58,8 +62,8 @@ public class test721 {
             }
         }
 
-        public void union(int x, int y) {
-            parent[find(x)] = find(y);
+        public void union(int x, int x1) {
+            parent[find(x)] = find(x1);
         }
 
         public int find(int x) {
