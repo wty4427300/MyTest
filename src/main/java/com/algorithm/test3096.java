@@ -1,6 +1,5 @@
 package com.algorithm;
 
-// todo
 public class test3096 {
     public int minimumLevels(int[] possible) {
         int n = possible.length;
