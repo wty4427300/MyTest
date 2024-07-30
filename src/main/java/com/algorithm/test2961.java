@@ -22,11 +22,19 @@ public class test2961 {
         int res = 1;
         while (y != 0) {
             if ((y & 1) != 0) {
+                //奇数
                 res = res * x % mod;
             }
+            //偶数
             x = x * x % mod;
             y >>= 1;
         }
         return res;
+    }
+
+    public static void main(String[] args) {
+        int[][] variables = {{2,6,4,10}};
+        test2961 test2961=new test2961();
+        test2961.getGoodIndices(variables,2);
     }
 }
