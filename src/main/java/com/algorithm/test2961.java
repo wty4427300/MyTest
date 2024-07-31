@@ -35,6 +35,7 @@ public class test2961 {
     public static void main(String[] args) {
         int[][] variables = {{2,6,4,10}};
         test2961 test2961=new test2961();
-        test2961.getGoodIndices(variables,2);
+        List<Integer> goodIndices = test2961.getGoodIndices(variables, 2);
+        System.out.println(goodIndices);
     }
 }
