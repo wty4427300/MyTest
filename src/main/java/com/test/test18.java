@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * 根据i18n处理不同文本
  */
-public class test18 {
+    public class test18 {
 
     public List<String> handlePurchaseNotice(String purchaseNotice, Locale locale) {
         if (StringUtils.isEmpty(purchaseNotice)) {
