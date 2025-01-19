@@ -45,7 +45,7 @@ public class OcrUtils {
 
     public static Optional<GeneralBasicOCRResponse> ocrRequest(String imgBase64) {
         try {
-            Credential cred = new Credential("AKID9FF74GeTL9sYBj8QfostoqmbM0XwDKIE", "10ukbacoBhCmis2JazUzWDFTpPxTp8NY");
+            Credential cred = new Credential("", "");
             HttpProfile httpProfile = new HttpProfile();
             httpProfile.setEndpoint("ocr.tencentcloudapi.com");
             ClientProfile clientProfile = new ClientProfile();
