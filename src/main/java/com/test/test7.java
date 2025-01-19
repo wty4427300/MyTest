@@ -13,7 +13,7 @@ public class test7 {
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
         Method methodGetId = Bean.class.getMethod("getId");
-        Bean bean = (Bean) Class.forName("com.test.Bean").newInstance();
+        Bean bean = (Bean) Class.forName("com.test.Bean").getDeclaredConstructor().newInstance();
         int value = (Integer) methodGetId.invoke(bean);
         System.out.println(value);
         long end1 = System.currentTimeMillis();

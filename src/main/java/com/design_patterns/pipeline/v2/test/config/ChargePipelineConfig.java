@@ -8,6 +8,7 @@ import com.design_patterns.pipeline.v2.test.filters.UserPayFilter;
 import com.design_patterns.pipeline.v2.filter.EventFilter;
 import com.design_patterns.pipeline.v2.test.pojo.ChargeContext;
 import com.design_patterns.pipeline.v2.test.service.IFacadeService;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan("com.design_patterns.pipeline.v2")
 public class ChargePipelineConfig {
 
-    @Autowired
+    @Resource
     private IFacadeService facadeService;
 
     @Bean

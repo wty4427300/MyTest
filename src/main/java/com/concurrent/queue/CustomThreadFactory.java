@@ -2,7 +2,6 @@ package com.concurrent.queue;
 
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -25,11 +24,13 @@ class MyRunnable implements Runnable {
     }
 }
 
+/**
+ * jdk高版本之后module限制无法反射访问firstTask了。
+ */
 public class CustomThreadFactory implements ThreadFactory {
 
     private final ConcurrentHashMap<Integer, Thread> threadMap = new ConcurrentHashMap<>();
 
-    @SneakyThrows
     @Override
     public Thread newThread(Runnable r) {
         Class<? extends Runnable> aClass = r.getClass();

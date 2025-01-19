@@ -48,11 +48,6 @@
             <version>2.0.0.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>32.0.0-jre</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
             <version>3.1.1</version>
@@ -89,7 +84,7 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.8.3</version>
+            <version>5.8.25</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -99,7 +94,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.1-jre</version>
+            <version>32.0.0-android</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -122,8 +117,8 @@
                 <configuration>
                     <!--                    &lt;!&ndash;开启协程配置&ndash;&gt;-->
                     <!--                    <compilerArgs>&#45;&#45;enable-preview</compilerArgs>-->
-                    <source>17</source>
-                    <target>17</target>
+                    <source>22</source>
+                    <target>22</target>
                 </configuration>
             </plugin>
         </plugins>

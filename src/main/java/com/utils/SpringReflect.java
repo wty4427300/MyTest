@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import lombok.Getter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 /**
@@ -43,7 +44,12 @@ public class SpringReflect {
                 System.out.println("普通:" + field.getName());
             }
         }
-        SpringReflect test = (SpringReflect) aClass.newInstance();
+        SpringReflect test = null;
+        try {
+            test = (SpringReflect) aClass.getDeclaredConstructor().newInstance();
+        } catch (InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
         SpringReflect.setDesc("小张");
         test.setName("小王");
         System.out.println(JSON.toJSONString(test));
