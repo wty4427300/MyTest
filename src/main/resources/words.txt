@@ -1,7 +1,1323 @@
-Hello
-World
-Hello
-Hello
-World
-Hello
-Flink
+--drop table if exists iot_dm.dm_iot_bi_kpi_sales_achievement_indicator_card_di;
+create table if not exists iot_dm.dm_iot_bi_kpi_sales_achievement_indicator_card_di (
+  `id` varchar(128)  NOT NULL comment '主键',
+  `period` varchar(128) NOT null comment '日期',
+  `period_range` varchar(128) NOT null comment '数据时间范围',
+  `channel_first` varchar(100) NOT NULL COMMENT "一级渠道",
+  `channel_second` varchar(100) NOT NULL COMMENT "二级渠道",
+  `channel_third` varchar(100) NOT NULL COMMENT "三级渠道",
+  `dim` varchar(8) not null comment '维度：month/week/day',
+  `order_num` decimal128(20, 0) null comment '订单量',
+  `sign_order_num` int null comment '签收订单量',
+  `sales_amount` decimal128(20, 10) null comment '销售额',
+  `sales_achievement` decimal128(20, 10) null comment '销售达成率',
+  `hardware_profit_rate` decimal128(20, 10) null comment '硬毛率',
+  `seles_profit` decimal128(20, 10) null comment '销毛额',
+  `seles_profit_rate` decimal128(20, 10) null comment '销毛率',
+  `seles_profit_achieve_rate` decimal128(20, 10) null comment '销毛达成率',
+  `ad_cost` decimal128(20, 10) null comment '广告花费',
+  `roi` decimal128(20, 10) null comment 'ROI',
+  `transaction_amount` decimal128(20, 10)  NULL COMMENT "广告达成额",
+  `return_num` decimal128(20, 0) null comment '退货单量',
+  `return_qty` decimal128(20, 0) null comment '退货数量',
+  `return_rate` decimal128(20, 10) null comment '退货率（退货数量/签收数量）',
+  `send_return_rate` decimal128(20, 10) null comment '发货口径退货率（退货数量/发货数量）',
+  `sales_target` decimal128(20, 10) NOT NULL COMMENT "销售目标(元)",
+  `gross_target` decimal128(20, 10) NOT NULL COMMENT "目标销毛额",
+  `send_num` int(11) NOT NULL COMMENT "发货单量",
+  `send_qty` int(11) NOT NULL COMMENT "发货数量",
+  `reback_amt` decimal128(20, 10) NOT NULL COMMENT "退货金额",
+  `query_channel` varchar(50)  NOT NULL COMMENT '查询渠道',
+  `update_time` datetime not null comment '更新时间',
+  `refund_amt` decimal128(20, 10) NULL COMMENT "返利费用",
+  `refund_rate` decimal128(20, 10) NULL COMMENT "返利率",
+  `other_rates` decimal128(20, 10) NULL  COMMENT '其他费率'
+) engine = OLAP
+PRIMARY KEY (`id`,`period`,`period_range`,`channel_first`,`channel_second`,`channel_third`)
+comment '销售kpi看板-指标卡' 
+distributed by hash(`id`,`period`,`period_range`,`channel_first`,`channel_second`,`channel_third`) buckets 10 
+properties (
+"storage_format" = "DEFAULT", 
+"enable_persistent_index" = "false", 
+"compression" = "LZ4", 
+"in_memory" = "false", 
+"replication_num" = "1" 
+);
+
+-- 1. 删除当月数据
+delete from iot_dm.dm_iot_bi_kpi_sales_achievement_indicator_card_di where period=date_format(now(), '%Y-%m') and channel_third != '360亚马逊';
+
+-- 2. 生成一条月维度数据
+INSERT INTO `iot_dm`.`dm_iot_bi_kpi_sales_achievement_indicator_card_di` (`id`,`period`,`period_range`,`channel_first`,`channel_second`
+,`channel_third`,`dim`,`order_num`,`sign_order_num`
+,`sales_amount`,`sales_achievement`,`hardware_profit_rate`,`seles_profit`,`seles_profit_rate`,`seles_profit_achieve_rate`
+,`ad_cost`,`roi`,`transaction_amount`,`return_num`,`return_qty`,`return_rate`,`send_return_rate`,`sales_target`,`gross_target`
+,`send_num`,`send_qty`,`reback_amt`,`query_channel`,`update_time`,`refund_amt`,refund_rate,other_rates)
+-- 月维度数量
+WITH m_v AS (
+   SELECT 
+        vma.period,
+        CASE 
+            WHEN vma.channel_first = '线下渠道' THEN vma.channel_first
+            WHEN vma.channel_second IN ('大客户', '公开', 'KA') THEN vma.channel_first
+            ELSE vma.channel_first
+        END AS channel_first,
+        CASE 
+            WHEN vma.channel_first = '线下渠道' THEN NULL
+            WHEN vma.channel_second IN ('大客户', '公开', 'KA') THEN vma.channel_second
+            ELSE vma.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN vma.channel_first = '线下渠道' THEN NULL
+            WHEN vma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE vma.channel_third
+        END AS channel_third,
+        SUM(vma.order_count) AS order_count,
+        SUM(vma.sign_count) AS sign_count,
+        SUM(vma.reback_count) AS reback_count,
+        SUM(vma.send_count) AS send_count,
+        SUM(vma.reback_rate) AS reback_rate
+    FROM 
+        iot_dws.dws_iot_bi_order_volume_month_ach_mi vma
+    GROUP BY 
+        vma.period,
+        CASE 
+            WHEN vma.channel_first = '线下渠道' THEN vma.channel_first
+            WHEN vma.channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(vma.channel_first, '-', vma.channel_second)
+            ELSE CONCAT(vma.channel_first, '-', vma.channel_second, '-', vma.channel_third)
+        END,
+        CASE 
+            WHEN vma.channel_first = '线下渠道' THEN vma.channel_first
+            WHEN vma.channel_second IN ('大客户', '公开', 'KA') THEN vma.channel_first
+            ELSE vma.channel_first
+        END,
+        CASE 
+            WHEN vma.channel_first = '线下渠道' THEN NULL
+            WHEN vma.channel_second IN ('大客户', '公开', 'KA') THEN vma.channel_second
+            ELSE vma.channel_second
+        END,
+        CASE 
+            WHEN vma.channel_first = '线下渠道' THEN NULL
+            WHEN vma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE vma.channel_third
+        END
+),
+
+-- 月维度金额
+m_a AS (
+    SELECT 
+        ma.period,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_first
+            ELSE ma.channel_first
+        END AS channel_first,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_second
+            ELSE ma.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE ma.channel_third
+        END AS channel_third,
+        SUM(ma.sales_amount) AS sales_amount,
+        SUM(ma.gross_amount) AS gross_amount,
+        SUM(ma.gross_sales_amount) AS gross_sales_amount,
+        SUM(ma.ad_cost) AS ad_cost,
+        SUM(ma.transaction_amount) / NULLIF(SUM(ma.ad_cost), 0) AS roi,  -- 避免除0错误
+        SUM(ma.transaction_amount) AS transaction_amount,
+        SUM(ma.month_return) AS reback_amt,
+        SUM(ma.m_return_count) AS reback_qty,
+        SUM(ma.m_send_count) AS send_qty,
+        sum(ma.refund_rate) as refund_rate,
+        sum(ma.other_rates) as other_rates,
+        sum(ma.refund_amt) as refund_amt
+    FROM iot_dws.dws_iot_bi_sales_gross_month_ach_mi ma
+    where ma.channel_third != '360亚马逊'
+    GROUP BY ma.period, 
+     CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(ma.channel_first, '-', ma.channel_second)
+            ELSE CONCAT(ma.channel_first, '-', ma.channel_second, '-', ma.channel_third)
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_first
+            ELSE ma.channel_first
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_second
+            ELSE ma.channel_second
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE ma.channel_third
+        END
+),
+-- 客户名称：360内测领用专用客户 订单费用
+m_i as (
+    SELECT 
+        period,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN channel_first
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_first
+            ELSE channel_first
+        END AS channel_first,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_second
+            ELSE channel_second
+        END AS channel_second,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE channel_third
+        END AS channel_third,
+        SUM(month_sign_amt) - SUM(month_reback_amt) AS lingyong_amt
+    FROM 
+        iot_dws.dws_iot_bi_tb_internal_costs_month_mi
+
+    GROUP BY 
+        period,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN channel_first
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(channel_first, '-', channel_second)
+            ELSE CONCAT(channel_first, '-', channel_second, '-', channel_third)
+        END,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN channel_first
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_first
+            ELSE channel_first
+        END,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_second
+            ELSE channel_second
+        END,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE channel_third
+        END
+),
+--单独退货数据
+m_r_q as (
+    SELECT 
+        ma.period,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_first
+            ELSE ma.channel_first
+        END AS channel_first,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_second
+            ELSE ma.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE ma.channel_third
+        END AS channel_third,
+        sum(`send_qty`) send_qty,sum(`return_qty`) reback_qty
+    FROM iot_dws.dws_iot_bi_order_reback_qty_day_di ma
+    GROUP BY ma.period, 
+     CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(ma.channel_first, '-', ma.channel_second)
+            ELSE CONCAT(ma.channel_first, '-', ma.channel_second, '-', ma.channel_third)
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_first
+            ELSE ma.channel_first
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_second
+            ELSE ma.channel_second
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE ma.channel_third
+        END
+),
+--月度销售目标
+m_sales_target as (
+   select m_a.period
+	, m_a.channel_first
+	, m_a.channel_second
+	, m_a.channel_third
+	, st.t_sales_target
+	, st.t_gross_target
+    from iot_dws.dws_iot_bi_sales_gross_month_ach_mi m_a
+        inner join iot_dws.dws_iot_bi_sales_target_channel_df st
+        on m_a.period = st.period
+            and m_a.channel_first = st.channel_first
+            AND (
+                -- 如果 st.channel_second 为空，则只匹配 channel_first
+                (NULLIF(st.channel_second, '') IS NULL) 
+                OR (m_a.channel_second = st.channel_second)
+            )
+            AND (
+                -- 如果 st.channel_third 为空，则只匹配 channel_first 和 channel_second
+                (NULLIF(st.channel_third, '') IS NULL) 
+                OR (m_a.channel_third = st.channel_third)
+            )
+    group by m_a.period, m_a.channel_first, m_a.channel_second, m_a.channel_third, st.t_sales_target, st.t_gross_target
+),
+sales_target_data as (
+     SELECT 
+        ma.period,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_first
+            ELSE ma.channel_first
+        END AS channel_first,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_second
+            ELSE ma.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE ma.channel_third
+        END AS channel_third,
+        sum(`t_sales_target`) t_sales_target,sum(`t_gross_target`) t_gross_target
+    FROM m_sales_target ma
+    GROUP BY ma.period, 
+     CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(ma.channel_first, '-', ma.channel_second)
+            ELSE CONCAT(ma.channel_first, '-', ma.channel_second, '-', ma.channel_third)
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_first
+            ELSE ma.channel_first
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_second
+            ELSE ma.channel_second
+        END,
+        CASE 
+
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE ma.channel_third
+        END
+),
+--KA与线下返利
+month_accrual_rebate_apply as (
+    SELECT `period`,
+     CASE 
+            WHEN channel_first = '线下渠道' THEN channel_first
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_first
+            ELSE channel_first
+        END AS channel_first,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_second
+            ELSE channel_second
+        END AS channel_second,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE channel_third
+        END AS channel_third
+    ,sum(`daily_rebate_amt`) refund_amt
+    FROM `iot_dws`.`dws_iot_jpaas_accrual_rebate_apply_day_di`
+    group by `period`,
+     CASE 
+            WHEN channel_first = '线下渠道' THEN channel_first
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(channel_first, '-', channel_second)
+            ELSE CONCAT(channel_first, '-', channel_second, '-', channel_third)
+        END,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN channel_first
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_first
+            ELSE channel_first
+        END,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_second
+            ELSE channel_second
+        END,
+        CASE 
+
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE channel_third
+        END
+)
+
+SELECT 
+    '1' AS primary_key,
+    m_a.period,
+    m_a.period AS data_range,
+    m_a.channel_first,
+    COALESCE(m_a.channel_second, '') AS channel_second,
+    COALESCE(m_a.channel_third, '') AS channel_third,  -- 处理 NULL 为空字符串
+    'month' AS dimension,
+    m_v.order_count,
+    m_v.sign_count,
+    m_a.sales_amount,
+    CASE 
+        WHEN IFNULL(st.t_sales_target, 0) = 0 THEN 0
+        ELSE m_a.sales_amount / st.t_sales_target
+    END AS sales_achievement,
+    m_a.gross_amount / NULLIF(m_a.sales_amount, 0) AS hard_margin_rate,
+    m_a.gross_sales_amount-COALESCE(m_i.lingyong_amt,0),
+    (m_a.gross_sales_amount-COALESCE(m_i.lingyong_amt,0)) / NULLIF(m_a.sales_amount, 0) AS sales_margin_rate,
+    CASE 
+        WHEN IFNULL(st.t_gross_target, 0) = 0 THEN 0
+        ELSE (m_a.gross_sales_amount-COALESCE(m_i.lingyong_amt,0)) / st.t_gross_target
+    END AS sales_profit_achieve_rate,
+    m_a.ad_cost,
+    COALESCE(m_a.roi,0) roi,
+    m_a.transaction_amount,
+    m_v.reback_count,
+    COALESCE(m_r_q.reback_qty,0) reback_qty,
+    m_v.reback_rate,
+    IFNULL(m_r_q.reback_qty, 0) / NULLIF(IFNULL(m_r_q.send_qty, 0), 0) AS shipment_reback_rate,
+    COALESCE(st.t_sales_target, 0) AS t_sales_target,
+    COALESCE(st.t_gross_target, 0) AS t_gross_target,
+    m_v.send_count,
+   COALESCE(m_r_q.send_qty,0) send_qty,
+    m_a.reback_amt,
+    CASE 
+        WHEN m_a.channel_second = 'KA' THEN 'KA'
+        WHEN m_a.channel_first IN ('大客户', '公开', '线下渠道') THEN '线下渠道'
+        ELSE m_a.channel_third
+    END AS query_channel,
+    NOW() AS record_time,
+    case when m_a.channel_first IN ('大客户', '公开', '线下渠道') or m_a.channel_second = 'KA' then 
+        CASE 
+            WHEN COALESCE(NULLIF(mara.refund_amt, ''), NULL) IS NOT NULL THEN mara.refund_amt 
+            WHEN COALESCE(NULLIF(m_a.refund_rate, ''), NULL) IS NOT NULL THEN m_a.sales_amount * m_a.refund_rate
+            ELSE NULL
+        end 
+        else m_a.refund_amt
+    END AS refund_amt,
+    case when m_a.channel_first IN ('大客户', '公开', '线下渠道') or m_a.channel_second = 'KA' then
+        CASE 
+            WHEN COALESCE(NULLIF(m_a.refund_rate, ''), NULL) IS NOT NULL THEN m_a.refund_rate
+            WHEN COALESCE(NULLIF(m_a.sales_amount, ''), NULL) IS NOT NULL AND COALESCE(NULLIF(mara.refund_amt, ''), NULL) IS NOT NULL 
+            THEN mara.refund_amt / m_a.sales_amount
+            ELSE NULL
+        end
+        else m_a.refund_amt / m_a.sales_amount
+    END AS refund_rate,
+     m_a.other_rates
+FROM m_a
+JOIN m_v
+    ON m_a.period = m_v.period
+    AND m_a.channel_first = m_v.channel_first
+    AND (COALESCE(m_a.channel_second, '') = COALESCE(m_v.channel_second, '') OR (m_a.channel_second IS NULL and NULLIF(m_v.channel_second,'')  IS NULL) )
+    AND (COALESCE(m_a.channel_third, '') = COALESCE(m_v.channel_third, '') OR (m_a.channel_third IS NULL and NULLIF(m_v.channel_third,'')  IS NULL) )
+left join m_i 
+     ON m_a.period = m_i.period
+    AND m_a.channel_first = m_i.channel_first
+    AND (COALESCE(m_a.channel_second, '') = COALESCE(m_i.channel_second, '') OR (m_a.channel_second IS NULL and NULLIF(m_i.channel_second,'')  IS NULL ))
+    AND (COALESCE(m_a.channel_third, '') = COALESCE(m_i.channel_third, '') OR (m_a.channel_third IS NULL and NULLIF(m_i.channel_third,'')  IS NULL ))
+left join m_r_q 
+     ON m_a.period = m_r_q.period
+    AND m_a.channel_first = m_r_q.channel_first
+    AND (COALESCE(m_a.channel_second, '') = COALESCE(m_r_q.channel_second, '') OR (m_a.channel_second IS NULL and NULLIF(m_r_q.channel_second,'') IS NULL) )
+    AND (COALESCE(m_a.channel_third, '') = COALESCE(m_r_q.channel_third, '') OR (m_a.channel_third IS NULL and NULLIF(m_r_q.channel_third,'') IS NULL) )
+LEFT JOIN iot_dws.dws_iot_bi_sales_target_channel_df st
+    ON m_a.period = st.period
+    AND m_a.channel_first = st.channel_first
+    AND (COALESCE(m_a.channel_second, '') = COALESCE(st.channel_second, '')  OR (m_a.channel_second IS NULL and NULLIF(st.channel_second, '') IS NULL) )
+    AND (COALESCE(m_a.channel_third, '') = COALESCE(st.channel_third, '') OR (m_a.channel_third IS NULL and NULLIF(st.channel_third, '') IS NULL ))
+LEFT JOIN month_accrual_rebate_apply  mara
+    ON m_a.period = mara.period
+    AND m_a.channel_first = mara.channel_first
+    AND (COALESCE(m_a.channel_second, '') = COALESCE(mara.channel_second, '')  OR (m_a.channel_second IS NULL and NULLIF(mara.channel_second, '') IS NULL) )
+    AND (COALESCE(m_a.channel_third, '') = COALESCE(mara.channel_third, '') OR (m_a.channel_third IS NULL and NULLIF(mara.channel_third, '') IS NULL ));
+
+-- 3. 生成一条周维度数据
+INSERT INTO `iot_dm`.`dm_iot_bi_kpi_sales_achievement_indicator_card_di`  (`id`,`period`,`period_range`,`channel_first`,`channel_second`,`channel_third`,`dim`,`order_num`,`sign_order_num`
+,`sales_amount`,`sales_achievement`,`hardware_profit_rate`,`seles_profit`,`seles_profit_rate`,`seles_profit_achieve_rate`
+,`ad_cost`,`roi`,`transaction_amount`,`return_num`,`return_qty`,`return_rate`,`send_return_rate`,`sales_target`
+,`gross_target`,`send_num`,`send_qty`,`reback_amt`,`query_channel`,`update_time`,`refund_amt`,refund_rate,other_rates)
+-- 日期计算
+with now_date as (
+	-- 当前日期
+    --select str_to_date('2025-01-30', '%Y-%m-%d') as curr_date
+    select now() AS curr_date
+),
+week_date_calc AS (
+    -- 计算当前日期所在的周的周一和周日
+    SELECT 
+        curr_date,
+        -- 获取当前日期的星期几，1=星期日, ..., 7=星期六
+        DAYOFWEEK(curr_date) AS day_of_week,
+        -- 计算本周的周一日期
+        CASE 
+            WHEN DAYOFWEEK(curr_date) = 1 THEN DATE_ADD(curr_date, INTERVAL -6 DAY) -- 周日修正为周一
+            ELSE DATE_ADD(curr_date, INTERVAL -(DAYOFWEEK(curr_date) - 2) DAY)     -- 其他情况向前移动到周一
+        END AS week_start_date,
+        -- 计算本周的周日日期
+        CASE 
+            WHEN DAYOFWEEK(curr_date) = 1 THEN curr_date                          -- 周日即为周日
+            ELSE DATE_ADD(curr_date, INTERVAL (7 - DAYOFWEEK(curr_date) + 1) DAY) -- 其他情况向后移动到周日
+        END AS week_end_date,
+        -- 获取当月第一天
+        CONCAT(YEAR(curr_date), '-', LPAD(MONTH(curr_date), 2, '0'), '-01') AS month_start_date,
+        -- 获取当月最后一天：下月第一天减一天
+        DATE_ADD(DATE_ADD(CONCAT(YEAR(curr_date), '-', LPAD(MONTH(curr_date), 2, '0'), '-01'), INTERVAL 1 MONTH), INTERVAL -1 DAY) AS month_end_date
+    FROM now_date
+),
+week_date AS (
+    SELECT
+        LEFT(curr_date, 7) AS period,  -- 当前月份
+        curr_date,                    -- 当前日期
+        -- 修正后的周一日期
+        CASE 
+            WHEN week_start_date < month_start_date THEN month_start_date -- 修正为当月第一天
+            ELSE week_start_date
+        END AS week_start_date,
+        -- 修正后的周日日期
+        CASE 
+            WHEN week_end_date > month_end_date THEN month_end_date -- 修正为当月最后一天
+            ELSE week_end_date
+        END AS week_end_date,
+        -- 本周天数
+        DATEDIFF(
+            CASE 
+                WHEN week_end_date > month_end_date THEN month_end_date -- 修正为当月最后一天
+                ELSE week_end_date
+            END,
+            CASE 
+                WHEN week_start_date < month_start_date THEN month_start_date -- 修正为当月第一天
+                ELSE week_start_date
+            END
+        ) + 1 AS week_days_count -- 天数 = 结束日期 - 开始日期 + 1
+    FROM week_date_calc
+),
+-- 周维度数量
+w_v AS (
+    SELECT 
+        vma.period,
+        vma.channel_first,
+        CASE 
+            WHEN vma.channel_second = 'KA' THEN vma.channel_second
+            WHEN vma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE vma.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN vma.channel_second = 'KA' OR vma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE vma.channel_third
+        END AS channel_third,
+        SUM(vma.sign_count) AS sign_count,
+        SUM(vma.reback_count) AS reback_count,
+        SUM(vma.order_count) AS order_count,
+        SUM(vma.send_count) AS send_count,
+        SUM(vma.reback_count) / NULLIF(SUM(vma.sign_count), 0) AS reback_rate
+    FROM iot_dws.dws_iot_bi_order_volume_day_ach_di AS vma, week_date
+    WHERE vma.period = DATE_FORMAT(NOW(), '%Y-%m') -- 当前年月
+        AND vma.dperiod >= DAY(week_date.week_start_date) 
+        AND vma.dperiod <= DAY(week_date.week_end_date) -- 本周过滤
+    GROUP BY 
+        vma.period,vma.channel_first,
+        CASE 
+            WHEN vma.channel_second = 'KA' THEN vma.channel_second
+            WHEN vma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE vma.channel_second
+        END,
+        CASE 
+            WHEN vma.channel_second = 'KA' OR vma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE vma.channel_third
+        END
+),
+-- 周维度金额
+w_a AS (
+    SELECT 
+        ma.mperiod AS period,
+        ma.channel_first,
+        CASE 
+            WHEN ma.channel_second = 'KA' THEN ma.channel_second
+            WHEN ma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE ma.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN ma.channel_second = 'KA' OR ma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE ma.channel_third
+        END AS channel_third,
+        week_date.week_start_date,
+        week_date.week_end_date,
+        SUM(ma.sales_amount) AS sales_amount,
+        SUM(ma.gross_amount) AS gross_amount,
+        SUM(ma.gross_sales_amount) AS gross_sales_amount,
+        SUM(ma.ad_cost) AS ad_cost,
+        SUM(ma.transaction_amount) / NULLIF(SUM(ma.ad_cost), 0) AS roi,
+        SUM(ma.transaction_amount) AS transaction_amount,
+        SUM(ma.d_return) AS reback_amt,
+        SUM(ma.d_return_count) AS reback_qty,
+        SUM(ma.d_send_count) AS send_qty,
+        sum(ma.refund_amt) as refund_amt
+    FROM iot_dws.dws_iot_bi_sales_gross_day_ach_di AS ma, week_date
+    WHERE ma.mperiod = DATE_FORMAT(NOW(), '%Y-%m') -- 当前年月
+        AND ma.dperiod >= DAY(week_date.week_start_date) 
+        AND ma.dperiod <= DAY(week_date.week_end_date) -- 本周过滤
+        and ma.channel_third != '360亚马逊' 
+    GROUP BY 
+        ma.mperiod,
+        ma.channel_first,
+        CASE 
+            WHEN ma.channel_second = 'KA' THEN ma.channel_second
+            WHEN ma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE ma.channel_second
+        END,
+        CASE 
+            WHEN ma.channel_second = 'KA' OR ma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE ma.channel_third
+        END,
+        week_date.week_start_date,
+        week_date.week_end_date
+),
+-- 目标计算
+w_sales_target as (
+   select d_a.mperiod as period
+	, d_a.channel_first
+	, d_a.channel_second
+	, d_a.channel_third
+	, st.t_day_sales_target
+	, st.t_day_gross_target
+    , wd.week_days_count
+    , wd.week_start_date
+    , wd.week_end_date
+    from iot_dws.dws_iot_bi_sales_gross_day_ach_di d_a
+        inner join iot_dws.dws_iot_bi_sales_target_channel_df st
+        on d_a.mperiod = st.period
+            and d_a.channel_first = st.channel_first
+            AND (
+                -- 如果 st.channel_second 为空，则只匹配 channel_first
+                (NULLIF(st.channel_second, '') IS NULL) 
+                OR (d_a.channel_second = st.channel_second)
+            )
+            AND (
+                -- 如果 st.channel_third 为空，则只匹配 channel_first 和 channel_second
+                (NULLIF(st.channel_third, '') IS NULL) 
+                OR (d_a.channel_third = st.channel_third)
+            )
+        inner join week_date wd 
+        on d_a.mperiod= wd.period   
+        AND d_a.dperiod >= DAY(wd.week_start_date) 
+        AND d_a.dperiod <= DAY(wd.week_end_date) -- 本周过滤  
+    WHERE d_a.mperiod =  DATE_FORMAT(NOW(), '%Y-%m') -- 当前年月
+    group by d_a.mperiod, d_a.channel_first, d_a.channel_second, d_a.channel_third, st.t_day_sales_target, st.t_day_gross_target, wd.week_days_count, wd.week_start_date
+    , wd.week_end_date
+),
+sales_target_data as (
+     SELECT 
+        ma.period
+        , ma.week_start_date
+        , ma.week_end_date
+        ,ma.week_days_count
+        ,CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_first
+            ELSE ma.channel_first
+        END AS channel_first,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_second
+            ELSE ma.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE ma.channel_third
+        END AS channel_third
+        ,sum(`t_day_sales_target`)
+        
+        ,(sum(`t_day_sales_target`)*ma.week_days_count) week_sales_target
+        ,(sum(`t_day_gross_target`)*ma.week_days_count) week_gross_target
+    FROM w_sales_target ma
+    GROUP BY ma.period, 
+     ma.week_start_date,
+     ma.week_end_date,
+     ma.week_days_count,
+     CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(ma.channel_first, '-', ma.channel_second)
+            ELSE CONCAT(ma.channel_first, '-', ma.channel_second, '-', ma.channel_third)
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_first
+            ELSE ma.channel_first
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_second
+            ELSE ma.channel_second
+        END,
+        CASE 
+
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE ma.channel_third
+        END
+),
+target_amt as (
+    SELECT st.`period`,`channel_first`,`channel_second`,`channel_third`,`t_sales_target`,`t_gross_target`
+        ,`t_day_sales_target`,`t_day_gross_target`
+        ,(t_day_sales_target*wd.week_days_count) as week_sales_target
+        ,(t_day_gross_target*wd.week_days_count) as week_gross_target
+        ,wd.week_days_count
+        ,wd.week_start_date
+        ,wd.week_end_date
+    FROM `iot_dws`.`dws_iot_bi_sales_target_channel_df` st
+    left join week_date wd
+    on st.period= wd.period
+),
+-- 客户名称：360内测领用专用客户 订单费用
+w_i as (
+     SELECT
+        wi.`period`,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN wi.channel_first
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN wi.channel_first
+            ELSE wi.channel_first
+        END AS channel_first,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN NULL
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN wi.channel_second
+            ELSE wi.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN NULL
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE wi.channel_third
+        END AS channel_third,
+        sum(wi.`sign_amt`)-sum(wi.`reback_amt`) as lingyong_amt
+     FROM `iot_dws`.`dws_iot_bi_tb_internal_costs_day_mi` as wi, week_date
+      WHERE wi.period = DATE_FORMAT(NOW(), '%Y-%m') -- 当前年月
+        AND wi.period_day >= DAY(week_date.week_start_date) 
+        AND wi.period_day <= DAY(week_date.week_end_date) -- 本周过滤  
+     GROUP BY wi.period, 
+     CASE 
+            WHEN wi.channel_first = '线下渠道' THEN wi.channel_first
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(wi.channel_first, '-', wi.channel_second)
+            ELSE CONCAT(wi.channel_first, '-', wi.channel_second, '-', wi.channel_third)
+        END,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN wi.channel_first
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN wi.channel_first
+            ELSE wi.channel_first
+        END,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN NULL
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN wi.channel_second
+            ELSE wi.channel_second
+        END,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN NULL
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE wi.channel_third
+        END
+),
+--单独退货数据
+m_r_q_m as (
+    SELECT wi.`period`,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN wi.channel_first
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN wi.channel_first
+            ELSE wi.channel_first
+        END AS channel_first,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN NULL
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN wi.channel_second
+            ELSE wi.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN NULL
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE wi.channel_third
+        END AS channel_third,
+        sum(`send_qty`) send_qty,sum(`return_qty`) reback_qty
+    FROM `iot_dws`.`dws_iot_bi_order_reback_qty_day_di` wi, week_date
+    WHERE wi.period = DATE_FORMAT(NOW(), '%Y-%m') -- 当前年月
+        AND wi.period_day >= DAY(week_date.week_start_date) 
+        AND wi.period_day <= DAY(week_date.week_end_date) -- 本周过滤  
+    GROUP BY wi.period, 
+     CASE 
+            WHEN wi.channel_first = '线下渠道' THEN wi.channel_first
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(wi.channel_first, '-', wi.channel_second)
+            ELSE CONCAT(wi.channel_first, '-', wi.channel_second, '-', wi.channel_third)
+        END,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN wi.channel_first
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN wi.channel_first
+            ELSE wi.channel_first
+        END,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN NULL
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN wi.channel_second
+            ELSE wi.channel_second
+        END,
+        CASE 
+            WHEN wi.channel_first = '线下渠道' THEN NULL
+            WHEN wi.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE wi.channel_third
+        END
+),
+--KA与线下返利
+month_accrual_rebate_apply as (
+    SELECT 
+        jarad.`period`,
+        CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN jarad.channel_first
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN jarad.channel_first
+            ELSE jarad.channel_first
+        END AS channel_first,
+        CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN NULL
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN jarad.channel_second
+            ELSE jarad.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN NULL
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE jarad.channel_third
+        END AS channel_third
+        ,sum(jarad.`daily_rebate_amt`) refund_amt
+    FROM `iot_dws`.`dws_iot_jpaas_accrual_rebate_apply_day_di` jarad
+    inner join week_date wd 
+    on jarad.period= wd.period   
+    AND jarad.period_day >= DAY(wd.week_start_date) 
+    AND jarad.period_day <= DAY(wd.week_end_date) -- 本周过滤  
+    WHERE jarad.period =  DATE_FORMAT(NOW(), '%Y-%m') -- 当前年月
+    group by jarad.`period`,
+     CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN jarad.channel_first
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(jarad.channel_first, '-', jarad.channel_second)
+            ELSE CONCAT(jarad.channel_first, '-', jarad.channel_second, '-', jarad.channel_third)
+        END,
+        CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN jarad.channel_first
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN jarad.channel_first
+            ELSE jarad.channel_first
+        END,
+        CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN NULL
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN jarad.channel_second
+            ELSE jarad.channel_second
+        END,
+        CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN NULL
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE jarad.channel_third
+        END
+)
+select 
+-- 主键
+'2', 
+--期间
+w_a.period,
+-- 数据时间范围
+concat(date_format(w_a.week_start_date, '%Y-%m-%d'), '~', date_format(w_a.week_end_date, '%Y-%m-%d')),
+w_v.`channel_first`,
+COALESCE(w_v.`channel_second`,''),
+COALESCE(w_v.`channel_third`,''),
+-- 维度
+'week',
+-- 订单量(签收-退货)
+w_v.order_count,
+-- 签收订单量
+w_v.sign_count,
+-- 销售额
+w_a.sales_amount,
+-- 销售达成率
+case when IFNULL(ta.week_sales_target, 0) = 0 THEN 0
+     else (w_a.sales_amount)/(ta.week_sales_target)
+end as sales_achieve_rate,
+-- 硬毛率
+(w_a.gross_amount)/(w_a.sales_amount),
+-- 销毛额
+(w_a.gross_sales_amount-COALESCE(w_i.lingyong_amt,0)),
+-- 销毛率
+(w_a.gross_sales_amount-COALESCE(w_i.lingyong_amt,0))/(w_a.sales_amount),
+-- 销毛达成率
+case when IFNULL(ta.week_gross_target, 0) = 0 THEN 0
+     else (w_a.gross_sales_amount-COALESCE(w_i.lingyong_amt,0))/(ta.week_gross_target)
+end as seles_profit_achieve_rate,
+-- 广告花费
+(w_a.ad_cost),
+-- ROI
+COALESCE(w_a.roi,0) as roi,
+-- 广告达成额
+w_a.transaction_amount,
+-- 退货但量
+w_v.reback_count,
+-- 退货数量
+COALESCE(m_r_q_m.reback_qty,0) reback_qty,
+-- 退货率,
+w_v.reback_rate,
+-- 发货口径退货率
+IFNULL(m_r_q_m.reback_qty, 0) / NULLIF(IFNULL(m_r_q_m.send_qty, 0), 0),
+-- 销售目标
+COALESCE(ta.week_sales_target,0) week_sales_target,
+-- 销毛目标
+COALESCE(ta.week_gross_target,0) week_gross_target,
+-- 发货单量
+w_v.send_count,
+-- 发货数量
+COALESCE(m_r_q_m.send_qty,0) send_qty,
+-- 退货金额
+w_a.reback_amt,
+CASE 
+    WHEN w_v.channel_second = 'KA' THEN 'KA'
+    WHEN w_v.channel_first IN ('大客户', '公开', '线下渠道') THEN '线下渠道'
+    ELSE w_v.channel_third
+END AS query_channel,
+now(),
+--返利费用
+ case when w_v.channel_first IN ('大客户', '公开', '线下渠道') or w_v.channel_second = 'KA' then 
+        CASE 
+            WHEN COALESCE(NULLIF(mara.refund_amt, ''), NULL) IS NOT NULL THEN mara.refund_amt 
+            ELSE 0
+        end 
+else w_a.refund_amt
+END AS refund_amt,
+case when w_v.channel_first IN ('大客户', '公开', '线下渠道') or w_v.channel_second = 'KA' then
+    CASE 
+        WHEN COALESCE(NULLIF(w_a.sales_amount, ''), NULL) IS NOT NULL AND COALESCE(NULLIF(mara.refund_amt, ''), NULL) IS NOT NULL 
+        THEN mara.refund_amt / w_a.sales_amount
+        ELSE 0
+    end
+    else w_a.refund_amt / w_a.sales_amount
+END AS refund_rate,
+null as other_rates
+FROM w_a
+JOIN w_v ON w_a.period = w_v.period
+    AND w_a.channel_first = w_v.channel_first
+    AND (COALESCE(w_a.channel_second, '') = COALESCE(w_v.channel_second, '')  OR (w_a.channel_second IS NULL and NULLIF(w_v.channel_second,'') IS NULL))
+    AND (COALESCE(w_a.channel_third, '') = COALESCE(w_v.channel_third, '') OR (w_a.channel_third IS NULL and NULLIF(w_v.channel_third,'') IS NULL ))
+left join w_i on w_a.period = w_i.period
+    AND w_a.channel_first = w_i.channel_first
+    AND (COALESCE(w_a.channel_second, '') = COALESCE(w_i.channel_second, '')  OR (w_a.channel_second IS NULL and NULLIF(w_i.channel_second,'') IS NULL))
+    AND (COALESCE(w_a.channel_third, '') = COALESCE(w_i.channel_third, '') OR (w_a.channel_third IS NULL and NULLIF(w_i.channel_third,'') IS NULL ))
+left JOIN m_r_q_m ON w_a.period = m_r_q_m.period
+    AND w_a.channel_first = m_r_q_m.channel_first
+    AND (COALESCE(w_a.channel_second, '') = COALESCE(m_r_q_m.channel_second, '')  OR (w_a.channel_second IS NULL and NULLIF(m_r_q_m.channel_second,'') IS NULL))
+    AND (COALESCE(w_a.channel_third, '') = COALESCE(m_r_q_m.channel_third, '') OR (w_a.channel_third IS NULL and NULLIF(m_r_q_m.channel_third,'') IS NULL ))
+left JOIN target_amt ta ON w_a.period = ta.period
+    AND w_a.channel_first = ta.channel_first
+    AND (COALESCE(w_a.channel_second, '') = COALESCE(ta.channel_second, '')  OR (w_a.channel_second IS NULL and NULLIF(ta.channel_second,'') IS NULL ))
+    AND (COALESCE(w_a.channel_third, '') = COALESCE(ta.channel_third, '') OR (w_a.channel_third IS NULL and NULLIF(ta.channel_third,'') IS NULL ))
+left join month_accrual_rebate_apply mara 
+on w_a.period = mara.period
+    AND w_a.channel_first = mara.channel_first
+    AND (COALESCE(w_a.channel_second, '') = COALESCE(mara.channel_second, '')  OR (w_a.channel_second IS NULL and NULLIF(mara.channel_second,'') IS NULL ))
+    AND (COALESCE(w_a.channel_third, '') = COALESCE(mara.channel_third, '') OR (w_a.channel_third IS NULL and NULLIF(mara.channel_third,'') IS NULL ))
+;
+
+-- 4. 生成一条日维度数据
+INSERT INTO `iot_dm`.`dm_iot_bi_kpi_sales_achievement_indicator_card_di`  (`id`,`period`,`period_range`,`channel_first`
+,`channel_second`,`channel_third`,`dim`,`order_num`,`sign_order_num`
+,`sales_amount`,`sales_achievement`,`hardware_profit_rate`,`seles_profit`,`seles_profit_rate`,`seles_profit_achieve_rate`
+,`ad_cost`,`roi`,transaction_amount,`return_num`,`return_qty`,`return_rate`,`send_return_rate`,`sales_target`
+,`gross_target`,`send_num`,`send_qty`,`reback_amt`,`query_channel`,`update_time`,`refund_amt`,refund_rate,other_rates)
+-- 日维度数量
+WITH d_v AS (
+    SELECT 
+        vma.period,
+        vma.channel_first,
+        CASE 
+            WHEN vma.channel_second = 'KA' THEN vma.channel_second
+            WHEN vma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE vma.channel_second 
+        END AS channel_second,
+        CASE 
+            WHEN vma.channel_second = 'KA' THEN NULL
+            WHEN vma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE vma.channel_third
+        END AS channel_third,
+        SUM(vma.order_count) AS order_count,
+        SUM(vma.sign_count) AS sign_count,
+        SUM(vma.reback_count) AS reback_count,
+        SUM(vma.send_count) AS send_count,
+        SUM(vma.reback_rate) AS reback_rate
+    FROM iot_dws.dws_iot_bi_order_volume_day_ach_di vma
+    WHERE vma.period = DATE_FORMAT(NOW(), '%Y-%m') -- 当前年月
+        AND vma.dperiod = DATE_FORMAT(NOW(), '%d') -- 当天
+    GROUP BY period, 
+            vma.channel_first,
+             CASE 
+                WHEN vma.channel_second = 'KA' THEN vma.channel_second
+                WHEN vma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+                ELSE vma.channel_second 
+             END,
+             CASE 
+                WHEN vma.channel_second = 'KA' THEN NULL
+                WHEN vma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+                ELSE vma.channel_third
+             END
+),
+-- 日维度金额
+d_a as (
+    select 
+        ma.mperiod as period, ma.dperiod
+        ,ma.`channel_first`
+        ,CASE 
+            WHEN ma.channel_second = 'KA' THEN ma.channel_second
+            WHEN ma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE ma.channel_second
+        END AS channel_second
+        ,CASE 
+            WHEN ma.channel_second = 'KA' THEN NULL
+            WHEN ma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+            ELSE ma.channel_third
+        END AS channel_third
+        ,sum(ma.sales_amount) as sales_amount
+        ,sum(ma.target_sales_amount) as target_sales_amount
+        ,sum(ma.gross_amount) as gross_amount
+        ,sum(ma.target_gross_sales_amount) as target_gross_sales_amount
+        ,sum(ma.gross_sales_amount) as gross_sales_amount
+        ,sum(ma.ad_cost) as ad_cost
+        ,sum(ma.transaction_amount)/sum(ma.ad_cost) as roi
+        ,sum(ma.transaction_amount) as transaction_amount
+        ,sum(ma.d_return) as reback_amt
+        ,sum(ma.day_gross_target) as gross_target
+        ,sum(ma.day_sales_target) as sales_target
+        ,sum(ma.d_return_count) as reback_qty
+        ,sum(ma.d_send_count) as send_qty
+        ,sum(ma.refund_amt) as refund_amt
+    from iot_dws.dws_iot_bi_sales_gross_day_ach_di as ma
+    where ma.mperiod = date_format(now(), '%Y-%m') -- 当前年月
+        and ma.dperiod = date_format(now(), '%d') -- 当天
+        and ma.channel_third != '360亚马逊'
+    group by ma.mperiod,dperiod,ma.`channel_first`,
+     CASE 
+        WHEN ma.channel_second = 'KA' THEN ma.channel_second
+        WHEN ma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+        ELSE ma.channel_second 
+        END,
+    CASE 
+        WHEN ma.channel_second = 'KA' THEN NULL
+        WHEN ma.channel_first IN ('大客户', '公开', '线下渠道') THEN NULL
+        ELSE ma.channel_third
+        END
+    
+),
+-- 客户名称：360内测领用专用客户 订单费用
+d_i as (
+     SELECT `period`,`period_day`,
+     CASE 
+            WHEN channel_first = '线下渠道' THEN channel_first
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_first
+            ELSE channel_first
+        END AS channel_first,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN NULLIF(channel_second, '')
+            ELSE NULLIF(channel_second, '')
+        END AS channel_second,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE NULLIF(channel_third, '')
+        END AS channel_third,
+     sum(`sign_amt`)-sum(`reback_amt`) as lingyong_amt
+     FROM `iot_dws`.`dws_iot_bi_tb_internal_costs_day_mi` 
+      where period = date_format(now(), '%Y-%m') -- 当前年月
+        and period_day = date_format(now(), '%d') -- 当天
+     group by `period`,`period_day`,
+      CASE 
+            WHEN channel_first = '线下渠道' THEN channel_first
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(channel_first, '-', channel_second)
+            ELSE CONCAT(channel_first, '-', channel_second, '-', channel_third)
+        END,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN channel_first
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_first
+            ELSE channel_first
+        END,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN NULLIF(channel_second, '')
+            ELSE NULLIF(channel_second, '')
+        END,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE NULLIF(channel_third, '')
+        END
+    
+),
+--单独退货数据
+m_r_q_d as (
+     SELECT `period`,`period_day`,
+        CASE 
+                WHEN channel_first = '线下渠道' THEN channel_first
+                WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_first
+                ELSE channel_first
+            END AS channel_first,
+            CASE 
+                WHEN channel_first = '线下渠道' THEN NULL
+                WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_second
+                ELSE channel_second
+            END AS channel_second,
+            CASE 
+                WHEN channel_first = '线下渠道' THEN NULL
+                WHEN channel_second IN ('大客户', '公开', 'KA') THEN NULL
+                ELSE channel_third
+            END AS channel_third,
+        sum(`send_qty`) send_qty,sum(`return_qty`) reback_qty
+     FROM `iot_dws`.`dws_iot_bi_order_reback_qty_day_di` ma
+     where ma.period = date_format(now(), '%Y-%m') -- 当前年月
+        and ma.period_day = date_format(now(), '%d') -- 当天
+     group by `period`,`period_day`,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN channel_first
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(channel_first, '-', channel_second)
+            ELSE CONCAT(channel_first, '-', channel_second, '-', channel_third)
+        END,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN channel_first
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_first
+            ELSE channel_first
+        END,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN channel_second
+            ELSE channel_second
+        END,
+        CASE 
+            WHEN channel_first = '线下渠道' THEN NULL
+            WHEN channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE channel_third
+        END
+),
+-- 目标计算
+d_sales_target as (
+   select d_a.mperiod as period
+	, d_a.channel_first
+	, d_a.channel_second
+	, d_a.channel_third
+	, st.t_day_sales_target
+	, st.t_day_gross_target
+    from iot_dws.dws_iot_bi_sales_gross_day_ach_di d_a
+        inner join iot_dws.dws_iot_bi_sales_target_channel_df st
+        on d_a.mperiod = st.period
+            and d_a.channel_first = st.channel_first
+            AND (
+                -- 如果 st.channel_second 为空，则只匹配 channel_first
+                (NULLIF(st.channel_second, '') IS NULL) 
+                OR (d_a.channel_second = st.channel_second)
+            )
+            AND (
+                -- 如果 st.channel_third 为空，则只匹配 channel_first 和 channel_second
+                (NULLIF(st.channel_third, '') IS NULL) 
+                OR (d_a.channel_third = st.channel_third)
+            )
+    WHERE d_a.mperiod =  DATE_FORMAT(NOW(), '%Y-%m') -- 当前年月
+       and d_a.dperiod = date_format(now(), '%d') -- 当天
+    group by d_a.mperiod, d_a.channel_first, d_a.channel_second, d_a.channel_third, st.t_day_sales_target, st.t_day_gross_target
+),
+d_sales_target_data as (
+     SELECT 
+        ma.period
+        ,CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_first
+            ELSE ma.channel_first
+        END AS channel_first,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_second
+            ELSE ma.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE ma.channel_third
+        END AS channel_third
+        ,sum(`t_day_sales_target`) as t_day_sales_target
+        ,sum(`t_day_gross_target`) as t_day_gross_target
+    FROM d_sales_target ma
+    GROUP BY ma.period, 
+     CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(ma.channel_first, '-', ma.channel_second)
+            ELSE CONCAT(ma.channel_first, '-', ma.channel_second, '-', ma.channel_third)
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN ma.channel_first
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_first
+            ELSE ma.channel_first
+        END,
+        CASE 
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN ma.channel_second
+            ELSE ma.channel_second
+        END,
+        CASE 
+
+            WHEN ma.channel_first = '线下渠道' THEN NULL
+            WHEN ma.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE ma.channel_third
+        END
+),
+--KA与线下返利
+month_accrual_rebate_apply as (
+    SELECT 
+        jarad.`period`,jarad.`period_day`
+        ,CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN jarad.channel_first
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN jarad.channel_first
+            ELSE jarad.channel_first
+        END AS channel_first,
+        CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN NULL
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN jarad.channel_second
+            ELSE jarad.channel_second
+        END AS channel_second,
+        CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN NULL
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE jarad.channel_third
+        END AS channel_third
+        ,sum(jarad.`daily_rebate_amt`) refund_amt
+    FROM `iot_dws`.`dws_iot_jpaas_accrual_rebate_apply_day_di` jarad
+    WHERE jarad.period =  DATE_FORMAT(NOW(), '%Y-%m') -- 当前年月
+       and jarad.period_day = date_format(now(), '%d') -- 当天
+    group by jarad.`period`,jarad.`period_day`,
+      CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN jarad.channel_first
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN CONCAT(jarad.channel_first, '-', jarad.channel_second)
+            ELSE CONCAT(jarad.channel_first, '-', jarad.channel_second, '-', jarad.channel_third)
+        END,
+        CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN jarad.channel_first
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN jarad.channel_first
+            ELSE jarad.channel_first
+        END,
+        CASE 
+            WHEN jarad.channel_first = '线下渠道' THEN NULL
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN jarad.channel_second
+            ELSE jarad.channel_second
+        END,
+        CASE 
+
+            WHEN jarad.channel_first = '线下渠道' THEN NULL
+            WHEN jarad.channel_second IN ('大客户', '公开', 'KA') THEN NULL
+            ELSE jarad.channel_third
+        END
+)
+select 
+-- 主键
+'3', 
+-- 期间
+d_a.period,
+-- 数据时间范围
+concat(d_a.period, '-', d_a.dperiod),
+d_v.`channel_first`,
+COALESCE(d_v.`channel_second`, '') channel_second,
+COALESCE(d_v.`channel_third`, '') channel_third,
+-- 维度
+'day',
+-- 订单量（签收-退货）
+d_v.order_count,
+-- 签收订单量
+d_v.sign_count,
+-- 销售额
+d_a.sales_amount,
+-- 销售达成率
+case when IFNULL(st.t_day_sales_target, 0) = 0 THEN 0
+     else (d_a.sales_amount)/(st.t_day_sales_target)
+end as sales_achievement,
+-- 硬毛率
+(d_a.gross_amount)/(d_a.sales_amount),
+-- 销毛额
+(d_a.gross_sales_amount-COALESCE(d_i.lingyong_amt,0)),
+-- 销毛率
+(d_a.gross_sales_amount-COALESCE(d_i.lingyong_amt,0))/(d_a.sales_amount),
+-- 销毛达成率
+case when IFNULL(st.t_day_gross_target, 0) = 0 THEN 0
+     else (d_a.gross_sales_amount-COALESCE(d_i.lingyong_amt,0))/(st.t_day_gross_target)
+end as seles_profit_achieve_rate,
+-- 广告花费
+(d_a.ad_cost),
+-- ROI
+COALESCE(d_a.roi,0) as roi,
+-- 广告达成额
+d_a.transaction_amount,
+-- 退货单量
+d_v.reback_count,
+-- 退货数量
+COALESCE(m_r_q_d.reback_qty,0) reback_qty,
+-- 退货率,
+d_v.reback_rate,
+-- 发货口径退货率
+--d_a.reback_qty/d_a.send_qty,
+IFNULL(m_r_q_d.reback_qty, 0) / NULLIF(IFNULL(m_r_q_d.send_qty, 0), 0),
+-- 销售目标
+COALESCE(st.t_day_sales_target,0) t_day_sales_target,
+-- 销毛目标
+COALESCE(st.t_day_gross_target,0) t_day_gross_target,
+-- 发货单量
+d_v.send_count,
+-- 发货数量
+COALESCE(m_r_q_d.send_qty,0) send_qty,
+-- 退货金额
+d_a.reback_amt,
+CASE 
+    WHEN d_v.channel_second = 'KA' THEN 'KA'
+    WHEN d_v.channel_first IN ('大客户', '公开', '线下渠道') THEN '线下渠道'
+    ELSE d_v.channel_third
+END AS query_channel,
+now(),
+--返利费用
+case when d_v.channel_first IN ('大客户', '公开', '线下渠道') or d_v.channel_second = 'KA' then 
+        CASE 
+            WHEN COALESCE(NULLIF(mara.refund_amt, ''), NULL) IS NOT NULL THEN mara.refund_amt 
+            ELSE 0
+        end 
+else d_a.refund_amt
+END AS refund_amt,
+case when d_v.channel_first IN ('大客户', '公开', '线下渠道') or d_v.channel_second = 'KA' then
+    CASE 
+        WHEN COALESCE(NULLIF(d_a.sales_amount, ''), NULL) IS NOT NULL AND COALESCE(NULLIF(mara.refund_amt, ''), NULL) IS NOT NULL 
+        THEN mara.refund_amt / d_a.sales_amount
+        ELSE 0
+    end
+    else d_a.refund_amt / d_a.sales_amount
+END AS refund_rate,
+null as other_rates
+FROM d_a
+JOIN d_v ON d_a.period = d_v.period
+    AND d_a.channel_first = d_v.channel_first
+    AND (COALESCE(d_a.channel_second, '') = COALESCE(d_v.channel_second, '')  OR (d_a.channel_second IS NULL and NULLIF(d_v.channel_second, '') IS NULL ))
+    AND (COALESCE(d_a.channel_third, '') = COALESCE(d_v.channel_third, '') OR (d_a.channel_third IS NULL and NULLIF(d_v.channel_third, '') IS NULL ))
+left join d_i ON d_a.period = d_i.period
+    AND d_a.channel_first = d_i.channel_first
+    AND (COALESCE(d_a.channel_second, '') = COALESCE(d_i.channel_second, '')  OR (d_a.channel_second IS NULL and NULLIF(d_i.channel_second, '') IS NULL ))
+    AND (COALESCE(d_a.channel_third, '') = COALESCE(d_i.channel_third, '') OR (d_a.channel_third IS NULL and NULLIF(d_i.channel_third, '') IS NULL ))
+left join m_r_q_d
+ON d_a.period = m_r_q_d.period
+    AND d_a.channel_first = m_r_q_d.channel_first
+    AND (COALESCE(d_a.channel_second, '') = COALESCE(m_r_q_d.channel_second, '')  OR (d_a.channel_second IS NULL and NULLIF(m_r_q_d.channel_second, '') IS NULL ))
+    AND (COALESCE(d_a.channel_third, '') = COALESCE(m_r_q_d.channel_third, '') OR (d_a.channel_third IS NULL and NULLIF(m_r_q_d.channel_third, '') IS NULL ))
+left join iot_dws.dws_iot_bi_sales_target_channel_df st
+ON d_a.period = st.period
+    AND d_a.channel_first = st.channel_first
+    AND (COALESCE(d_a.channel_second, '') = COALESCE(st.channel_second, '')  OR (d_a.channel_second IS NULL and NULLIF(st.channel_second, '') IS NULL ))
+    AND (COALESCE(d_a.channel_third, '') = COALESCE(st.channel_third, '') OR (d_a.channel_third IS NULL and NULLIF(st.channel_third, '') IS NULL ))
+left join month_accrual_rebate_apply mara 
+on d_a.period = mara.period
+    AND d_a.channel_first = mara.channel_first
+   AND (COALESCE(d_a.channel_second, '') = COALESCE(mara.channel_second, '')  OR (d_a.channel_second IS NULL and NULLIF(mara.channel_second, '') IS NULL ))
+    AND (COALESCE(d_a.channel_third, '') = COALESCE(mara.channel_third, '') OR (d_a.channel_third IS NULL and NULLIF(mara.channel_third, '') IS NULL ))
+;
