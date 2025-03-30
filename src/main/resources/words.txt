@@ -1,39 +1,20 @@
---drop table `iot_dws`.`dws_iot_bi_sales_gross_month_ach_mi`;
-
-CREATE TABLE if not exists `iot_dws`.`dws_iot_bi_sales_gross_month_ach_mi` (
+--drop table iot_dws.dws_iot_bi_order_volume_hour_ach_hi;
+CREATE TABLE if not exists iot_dws.dws_iot_bi_order_volume_hour_ach_hi (
   `channel_first` varchar(100) NOT NULL COMMENT "一级渠道",
   `channel_second` varchar(100) NOT NULL COMMENT "二级渠道",
   `channel_third` varchar(100) NOT NULL COMMENT "三级渠道",
-  `product_line` varchar(100) NOT NULL COMMENT "产品线",
-  `subdivision_product_line` varchar(100) NOT NULL COMMENT "细分产线",
   `period` varchar(50) NOT NULL COMMENT "年月",
-  `month_sign` decimal128(20, 10) NOT NULL COMMENT "签收金额",
-  `send_sales` decimal128(20, 10) NOT NULL COMMENT "发货金额",
-  `month_return` decimal128(20, 10) NOT NULL COMMENT "退货金额",
-  `sales_amount` decimal128(20, 10) NOT NULL COMMENT "销售额-签收口径",
-  `send_sales_amount` decimal128(20, 10) NOT NULL COMMENT "销售额-发货口径",
-  `target_sales_amount` decimal128(20, 10) NOT NULL COMMENT "本月目标销售额",
-  `sales_achievement_rate` decimal128(20, 10) NOT NULL COMMENT "销售达成率（今日销售额/本月销售目标）",
-  `cost` decimal128(20, 10) NOT NULL COMMENT "成本",
-  `gross_amount` decimal128(20, 10) NOT NULL COMMENT "硬毛额",
-  `gross_rate` decimal128(20, 10) NULL COMMENT "硬毛率",
-  `expense` decimal128(20, 10) NOT NULL COMMENT "费用（t+1，取昨日）",
-  `gross_sales_amount` decimal128(20, 10) NOT NULL COMMENT "销毛额（销售额-成本-费用）",
-  `target_gross_sales_amount` decimal128(20, 10) NOT NULL COMMENT "本月目标销毛额",
-  `gross_achievement_rate` decimal128(20, 10)  NULL COMMENT "销毛达成率（今日销毛额/本月销毛目标）",
-  `gross_sales_rate` decimal128(20, 10)  NULL COMMENT "销毛毛利率（今日销毛额/今日销售额）",
-  `ad_cost` decimal128(20, 10)  NULL COMMENT "广告费用",
-  `transaction_amount` decimal128(20, 10)  NULL COMMENT "广告达成额",
-  `refund_rate` decimal128(20, 10) NULL COMMENT "返利率",
-  `other_rates` decimal128(20, 10) NULL  COMMENT '其他费率',
-  `m_send_count` decimal128(20, 0) NOT NULL COMMENT "月发货数量",
-  `m_return_count` decimal128(20, 0) NOT NULL COMMENT "月退货数量",
-  `refund_amt` decimal128(20, 10) NULL COMMENT "返利费用"
-
+  `dperiod` varchar(50) NOT NULL COMMENT "日",
+  `hperiod` varchar(50) NOT NULL COMMENT "时",
+  `sign_count` int(11) NOT NULL COMMENT "签收量",
+  `send_count` int(11) NOT NULL COMMENT "发货量",
+  `reback_count` int(11) NOT NULL COMMENT "退货量",
+  `order_count` int(11) NOT NULL COMMENT "订单量（签收量-退货量）",
+  `reback_rate` decimal128(20, 10)  NULL COMMENT "退货率（退货量/签收量）"
 ) ENGINE=OLAP
-PRIMARY KEY(`channel_first`, `channel_second`, `channel_third`, `product_line`, `subdivision_product_line`, `period`)
-COMMENT "销售达成情况月维度"
-DISTRIBUTED BY HASH(`channel_first`, `channel_second`, `channel_third`, `product_line`, `subdivision_product_line`, `period`) BUCKETS 10
+PRIMARY KEY(`channel_first`, `channel_second`, `channel_third`, `period`, `dperiod`, `hperiod`)
+COMMENT "销售达成情况时维度"
+DISTRIBUTED BY HASH(`channel_first`, `channel_second`, `channel_third`, `period`, `dperiod`, `hperiod`) BUCKETS 10
 PROPERTIES (
 "replication_num" = "1",
 "in_memory" = "false",
@@ -41,456 +22,60 @@ PROPERTIES (
 "enable_persistent_index" = "false",
 "compression" = "LZ4"
 );
---删除当月数据
-delete from `iot_dws`.`dws_iot_bi_sales_gross_month_ach_mi` where period=date_format(now(), '%Y-%m') and channel_third != '360亚马逊';
+--truncate table iot_dws.dws_iot_bi_order_volume_hour_ach_hi;
+delete from `iot_dws`.`dws_iot_bi_order_volume_hour_ach_hi` where concat(period,'-',dperiod)=date_format(now(), '%Y-%m-%d') and channel_third!='360亚马逊';
 
-INSERT INTO `iot_dws`.`dws_iot_bi_sales_gross_month_ach_mi` (`channel_first`,`channel_second`,`channel_third`,`product_line`,`subdivision_product_line`,`period`,
-`month_sign`,`send_sales`,`month_return`,`sales_amount`,`send_sales_amount`,`target_sales_amount`,`sales_achievement_rate`,`cost`,`gross_amount`,`gross_rate`,`expense`
-,`gross_sales_amount`,`target_gross_sales_amount`,`gross_achievement_rate`,`gross_sales_rate`,`ad_cost`,`transaction_amount`,`refund_rate`,`other_rates`
-,`m_send_count`,`m_return_count`,`refund_amt`)
+INSERT INTO `iot_dws`.`dws_iot_bi_order_volume_hour_ach_hi` (`channel_first`,`channel_second`,`channel_third`,`period`,`dperiod`,`hperiod`,`sign_count`,`send_count`,`reback_count`,`order_count`,`reback_rate`)
 with sales_gross_temp as (
-    select * from (
-    select channel_first, channel_second,channel_third,DATE_FORMAT(sign_date, '%Y-%m') AS sign_date,DATE_FORMAT(send_date, '%Y-%m') AS send_date,null as reback_date,purchase_cost_sum as cost_total,
-    business_line,subdivision_product_line,corp_amount as sales ,door_lock_install_cost ,'发货' as type
-    , CASE
-            WHEN material_no LIKE 'F%' THEN 0
-            ELSE corp_num
-        END as sign_count
-    ,0 as reback_count
+select * from (
+select channel_first, channel_second,channel_third,DATE_FORMAT(sign_date, '%Y-%m-%d %H') AS sign_date, DATE_FORMAT(send_date, '%Y-%m-%d %H') AS send_date,null as reback_date,
+'发货' as type,toc_order_no as fhd_code, null as reback_code
+from iot_dm.dm_iot_bms_tc_send_reback_order_mi as tc
+-- toc查询条件
+where tc.toc_order_status = '发货' and  tc.send_date is not null
+union all
+select channel_first, channel_second,channel_third,DATE_FORMAT(sign_system_date, '%Y-%m-%d %H') AS sign_date,DATE_FORMAT(send_system_date, '%Y-%m-%d %H') AS send_date,null as reback_date,
 
-    from iot_dm.dm_iot_bms_tc_send_reback_order_mi as tc
-    -- toc查询条件
-    where tc.toc_order_status = '发货' and tc.send_date is not null
+'发货' as type,send_order_app_no as fhd_code, null as reback_code
+from iot_dm.dm_iot_bms_tb_send_reback_order_mi as tb
+-- tob查询条件
+where tb.order_status = '发货' and tb.send_system_date is not null
+union all
+---------- 关联退货部分
+select channel_first, channel_second,channel_third,null AS sign_date, null AS send_date,
+DATE_FORMAT( tc.reback_date, '%Y-%m-%d %H') as reback_date,
+
+ '退货' as type , null as fhd_code, toc_order_no as reback_code
+from iot_dm.dm_iot_bms_tc_send_reback_order_mi as tc
+-- toc查询条件
+where  tc.reback_date is not null  and DATE_FORMAT(tc.reback_date, '%Y-%m-%d') = DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+union all
+select channel_first, channel_second,channel_third,null AS sign_date,null AS send_date,
+DATE_FORMAT(tb.reback_date, '%Y-%m-%d %H') as reback_date,
+
+ '退货' as type, null as fhd_code, reback_order_no as reback_code
+from iot_dm.dm_iot_bms_tb_send_reback_order_mi as tb
+-- tob查询条件
+where tb.order_status = '退货' and tb.reback_date is not null
+and  DATE_FORMAT(tb.reback_date, '%Y-%m-%d') = DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+) as t where t.channel_first is not null
+),
+month_count_temp as (
+    select channel_first, channel_second,channel_third, sign_date as period,  count(distinct fhd_code) as sign_count,0 as reback_count, 0 as send_count from sales_gross_temp group by channel_first, channel_second,channel_third, period
     union all
-    select channel_first, channel_second,channel_third,DATE_FORMAT(sign_system_date, '%Y-%m') AS sign_date,DATE_FORMAT(send_system_date, '%Y-%m') AS send_date,null as reback_date,purchase_cost_sum as cost_total,
-    business_line,subdivision_product_line,amount as sales ,door_lock_install_cost  ,'发货' as type
-    , CASE
-            WHEN material_no LIKE 'F%' THEN 0
-            ELSE corp_num
-        END as sign_count
-    , 0 as reback_count
-
-    from iot_dm.dm_iot_bms_tb_send_reback_order_mi as tb
-    -- tob查询条件
-    where tb.order_status = '发货' and tb.send_system_date is not null
+    select channel_first, channel_second,channel_third, reback_date as period, 0 as sign_count, count(distinct reback_code) as reback_count, 0 as send_count from sales_gross_temp group by channel_first, channel_second,channel_third, period
     union all
-    ---------- 关联退货部分
-    select channel_first, channel_second,channel_third,null AS sign_date, null AS send_date,
-    DATE_FORMAT( tc.reback_date, '%Y-%m') as reback_date,purchase_cost_sum as cost_total,
-    business_line,subdivision_product_line,corp_amount as sales ,door_lock_install_cost  ,'退货' as type
-    , 0 as sign_count , CASE
-            WHEN material_no LIKE 'F%' THEN 0
-            ELSE corp_num
-        END as reback_count
-
-    from iot_dm.dm_iot_bms_tc_send_reback_order_mi as tc
-    -- toc查询条件
-    where  tc.reback_date is not null
-    union all
-    select channel_first, channel_second,channel_third,null AS sign_date, null AS send_date,
-    DATE_FORMAT(tb.reback_date, '%Y-%m') as reback_date,purchase_cost_sum as cost_total,
-    business_line,subdivision_product_line,amount as sales ,door_lock_install_cost ,'退货' as type
-    , 0 as sign_count , CASE
-            WHEN material_no LIKE 'F%' THEN 0
-            ELSE corp_num
-        END as reback_count
-
-    from iot_dm.dm_iot_bms_tb_send_reback_order_mi as tb
-    -- tob查询条件
-    where tb.order_status = '退货' and tb.reback_date is not null
-    ) as t where t.channel_first is not null
+    select channel_first, channel_second,channel_third, send_date as period,  0 as sign_count,0 as reback_count,count(distinct fhd_code) as send_count from sales_gross_temp group by channel_first, channel_second,channel_third, period
 ),
+month_count_result as (
+    select channel_first, channel_second,channel_third,DATE_FORMAT(period, '%Y-%m') as period,DATE_FORMAT(period, '%d') as dperiod,DATE_FORMAT(period, '%H') as hperiod, sum(sign_count) as sign_count , sum(send_count) as send_count,sum(reback_count) as reback_count from month_count_temp
+    where  DATE_FORMAT(period, '%Y-%m-%d') = DATE_FORMAT(CURDATE(), '%Y-%m-%d') group by
+    channel_first, channel_second,channel_third,period,dperiod,hperiod
 
--- 签收口径统计
-sign_order_temp as (
-    select channel_first, channel_second,channel_third, sign_date AS post_period, subdivision_product_line,business_line,
-    sum(sales) as sign_sales , sum(cost_total) as cost,sum(door_lock_install_cost) as sign_door_cost,0 as send_sales,0 as reback_sales,0 as reback_cost
-    ,sum(sign_count) as sign_count,0 as reback_count,0 as send_count
-    from sales_gross_temp
-    where type = '发货' and sign_date is not null and subdivision_product_line is not null
-
- group by channel_first, channel_second,channel_third,post_period, subdivision_product_line,business_line
-),
--- 发货口径统计
-send_order_temp as (
--- 发货口径统计
-    select channel_first, channel_second,channel_third, send_date AS post_period, subdivision_product_line,business_line,
-    0 as sign_sales , 0 as cost,0 as sign_door_cost,sum(sales) as send_sales,0 as reback_sales,0 as reback_cost
-    ,0 as sign_count,0 as reback_count,sum(sign_count) as send_count
-    from sales_gross_temp
-    where type = '发货' and send_date is not null and subdivision_product_line is not null
-    group by channel_first, channel_second,channel_third,post_period, subdivision_product_line,business_line
-),
--- 退货口径统计
-reback_order_temp as (
-     select channel_first, channel_second,channel_third, reback_date AS post_period, subdivision_product_line,business_line,
-    0 as sign_sales , 0 as cost,0 as sign_door_cost,0 as send_sales,sum(sales) as reback_sales,sum(cost_total+door_lock_install_cost) as reback_cost
-    ,0 as sign_count,sum(reback_count) as reback_count,0 as send_count
-    from sales_gross_temp
-    where type = '退货' and reback_date is not null and subdivision_product_line is not null
-
- group by channel_first, channel_second,channel_third,post_period, subdivision_product_line,business_line
-),
--- 汇总签收退货信息0109
-second_final_temp as (
-    select channel_first,channel_second,channel_third,post_period,subdivision_product_line,business_line,sum(sign_sales) as sign_sales, sum(reback_sales) as reback_sales,
-    sum(send_sales) as send_sales,
-    sum(cost) as cost,sum(sign_door_cost) as sign_door_cost,sum(reback_cost) as reback_cost
-    ,sum(sign_count) as sign_count,sum(reback_count) as reback_count,sum(send_count) as send_count
-     from (
-     select * from sign_order_temp
-      union all
-     select * from reback_order_temp
-     union all
-     select * from send_order_temp
-     ) as t
-      group by t.channel_first, t.channel_second,t.channel_third,t.post_period, t.subdivision_product_line,t.business_line
-),
--- 调整表
-adj_temp as (
-SELECT
-    channel_first,
-    channel_second,
-    channel_third,
-    subdivision_product_line,
-    '收入' AS adjustment_item,
-    period,
-    SUM(CASE WHEN adjustment_item = '收入' THEN adjustment_amt ELSE 0 END) AS income_amt,
-    '成本' AS adjustment_item,
-    SUM(CASE WHEN adjustment_item = '成本' THEN adjustment_amt ELSE 0 END) AS cost_amt,
-    '费用' AS adjustment_item,
-    SUM(CASE WHEN adjustment_item = '费用' THEN adjustment_amt ELSE 0 END) AS expense_amt
-FROM
-    iot_dwd.dwd_iot_bi_product_gross_achievement_adjustment_mi s2
-GROUP BY
-    channel_first,
-    channel_second,
-    channel_third,
-    subdivision_product_line,
-    period
-),
-
--- 实际支付表
-three_final_temp as (
--- 天猫实际支付费用
-     select
- DATE_FORMAT(trans_date, '%Y-%m') as post_period,product_line as subdivision_product_line, SUM(fee) AS total_fee,'电商' as channel_first,
- '自营' as channel_second, '天猫官旗' as channel_third
- from iot_dws.dws_iot_360eco_yzmall_view_tmall_fee_det2024 where product_line is not null
- group by post_period,subdivision_product_line
- union all
- -- 京东实际支付费用
-   select
- DATE_FORMAT(trans_date, '%Y-%m') as post_period,product_line as subdivision_product_line, SUM(fee) AS total_fee,'电商' as channel_first,
- '自营' as channel_second, '京东' as channel_third
- from iot_dws.dws_iot_360eco_yzmall_view_jd_fee_det where product_line is not null
- group by post_period,subdivision_product_line
- union all
- -- 亚马逊实际支付费用 total_fee=平台佣金+其它销售费用
-   select
- DATE_FORMAT(data_date, '%Y-%m') as post_period,productline_name as subdivision_product_line, SUM(platform_rebate+other_fee) AS total_fee,'海外' as channel_first,
- '自营' as channel_second, '360亚马逊' as channel_third
- from iot_ods.man_dm_iot_kpi_amz_fee_persoanal_allocation_mi where productline_name is not null
- group by post_period,subdivision_product_line
-),
--- 广告费用表
-ad_final_temp as (
-     select
- DATE_FORMAT(trans_date, '%Y-%m') as post_period,product_line as subdivision_product_line, SUM(fee) AS ad_fee, SUM(transaction_amount) AS transaction_amount,'电商' as channel_first,
- '自营' as channel_second, '天猫官旗' as channel_third
- from iot_dws.dws_iot_360eco_yzmall_last_day_fee where product_line is not null
- group by post_period,subdivision_product_line
- union all
-    select
- DATE_FORMAT(trans_date, '%Y-%m') as post_period,product_line as subdivision_product_line, SUM(fee) AS ad_fee, SUM(transaction_amount) AS transaction_amount,'电商' as channel_first,
- '自营' as channel_second, '京东' as channel_third
- from iot_dws.dws_iot_360eco_yzmall_jd_last_day_fee where product_line is not null
- group by post_period,subdivision_product_line
- union all
- -- 亚马逊广告费
- SELECT DATE_FORMAT(data_date, '%Y-%m') AS post_period,
-       productline_name AS subdivision_product_line,
-       SUM(total_ads_cost) AS ad_fee,
-       0 AS transaction_amount,  -- 添加默认值
-       '海外' AS channel_first,
-       '自营' AS channel_second,
-       '360亚马逊' AS channel_third
- from iot_ods.man_dm_iot_kpi_amz_fee_persoanal_allocation_mi
- where productline_name IS NOT NULL
- group by post_period, subdivision_product_line
-),
---KA与线下返利
-month_accrual_rebate_apply as (
-    SELECT `period`,`channel_first`,`channel_second`,`channel_third`
-    ,sum(`daily_rebate_amt`) m_rebate_amt
-    FROM `iot_dws`.`dws_iot_jpaas_accrual_rebate_apply_day_di`
-    group by `period`,`channel_first`,`channel_second`,`channel_third`
-),
-final_temp as (
-    select
-        m1.channel_first,
-        m1.channel_second,
-         COALESCE(m1.channel_third, '') AS channel_third,
-         m1.post_period,
-        m1.subdivision_product_line,
-        m1.business_line,
-        COALESCE(m1.sign_sales, 0) AS sign_sales,
-        COALESCE(m1.send_sales, 0) AS send_sales,
-        COALESCE(m1.cost, 0) AS cost,
-        COALESCE(m1.sign_door_cost, 0) AS sign_door_cost,
-        COALESCE(m1.reback_sales, 0) AS reback_sales,
-        COALESCE(s1.total_fee, 0) AS total_fee,
-        COALESCE(ad.ad_fee, 0) AS ad_fee,
-        COALESCE(ad.transaction_amount, 0) AS transaction_amount,
-        COALESCE(s2.income_amt, 0) AS income_amt,
-        COALESCE(s2.cost_amt, 0) AS cost_amt,
-        COALESCE(s2.expense_amt, 0) AS expense_amt,
-        -- COALESCE(s3.sales_target, 0) AS sales_target,
-         --COALESCE(s3.gross_target, 0) AS gross_target,
-         COALESCE(m1.reback_cost, 0) AS reback_cost,
-         COALESCE(m1.sign_count, 0) AS sign_count,
-         COALESCE(m1.reback_count, 0) AS reback_count,
-         COALESCE(m1.send_count, 0) AS send_count,
-         --返利率
-         COALESCE(fl.refund_rate, '0') refund_rate,
-         --返利费用
-         case when m1.channel_first IN ('大客户','公开','线下渠道')  or m1.channel_second='KA'
-              then COALESCE(arad.m_rebate_amt, '0')
-            else (COALESCE(m1.sign_sales, 0) - COALESCE(m1.reback_sales, 0) + COALESCE(s2.income_amt, 0))*COALESCE(fl.refund_rate, '0')
-         end AS refund_amt,
-         -- 其他费率
-         COALESCE(fl.other_rates, '0') AS other_rate
-    from second_final_temp as m1
-    left join three_final_temp as s1
-    on m1.channel_first = s1.channel_first
-    and m1.channel_second = s1.channel_second
-    and m1.channel_third = s1.channel_third
-    and m1.post_period = s1.post_period
-    and m1.subdivision_product_line = s1.subdivision_product_line
-    -- 关联调整表
-    left join
-    adj_temp as s2
-    on
-    m1.channel_first = s2.channel_first
-    and m1.channel_second = s2.channel_second
-    and m1.channel_third = s2.channel_third
-    and m1.post_period = s2.period
-    and m1.subdivision_product_line = s2.subdivision_product_line
-
-    -- 关联广告费
-   left join ad_final_temp as ad
-    on m1.channel_first = ad.channel_first
-    and m1.channel_second = ad.channel_second
-    and m1.channel_third = ad.channel_third
-    and m1.post_period = ad.post_period
-    and m1.subdivision_product_line = ad.subdivision_product_line
-    -- 增加返利表
-    left join iot_dwd.dwd_iot_bi_rebate_fee_maintenance_mi as fl
-    on m1.channel_first = fl.channel_first
-    AND m1.channel_second = fl.channel_second
-    AND m1.channel_third = fl.channel_third
-    and m1.post_period = fl.period
-    AND m1.subdivision_product_line = fl.subdivision_product_line
-    left join month_accrual_rebate_apply arad
-    on m1.channel_first = arad.channel_first
-    AND m1.channel_second = arad.channel_second
-    AND m1.channel_third = arad.channel_third
-    and m1.post_period = arad.period
-),
-final_results AS (
-    SELECT
-        m1.channel_first AS channel_first,
-        m1.channel_second,
-        m1.channel_third,
-        m1.business_line AS product_line,
-        m1.subdivision_product_line,
-        m1.post_period ,
-        -- 签收金额
-        m1.sign_sales AS month_sign,
-        -- 发货金额
-        m1.send_sales as send_sales,
-        -- 退货金额
-        m1.reback_sales AS month_return ,
-        -- 签收销售额
-       -- (sign_sales - reback_sales + income_amt - sign_sales*refund_rate) as sales_amount,
-        (sign_sales - reback_sales + income_amt) as sales_amount,
-        -- 发货销售额
-        -- (send_sales - reback_sales + income_amt- sign_sales*refund_rate) as send_sales_amount,
-        (send_sales - reback_sales + income_amt) as send_sales_amount,
-        -- 本月销售目标
-         --sales_target AS target_sales_amount,
-         -- 销售达成率
-        -- COALESCE(((sign_sales - reback_sales + income_amt- sign_sales*refund_rate) / sales_target), 0) AS sales_achievement_rate,
-        --COALESCE(((sign_sales - reback_sales + income_amt) / sales_target), 0) AS sales_achievement_rate,
-        -- 成本
-        (cost + sign_door_cost + cost_amt  - reback_cost) AS cost,
-        -- 硬毛额
-        --((sign_sales - reback_sales + income_amt- sign_sales*refund_rate) - (cost + sign_door_cost + cost_amt - reback_cost)) AS gross_amount,
-        ((sign_sales - reback_sales + income_amt) - (cost + sign_door_cost + cost_amt - reback_cost)) AS gross_amount,
-        -- 硬毛率（硬毛额/销售额）
-        -- (((sign_sales - reback_sales + income_amt- sign_sales*refund_rate) - (cost + sign_door_cost + cost_amt  -reback_cost))  / (sign_sales - reback_sales  + income_amt- sign_sales*refund_rate)) AS gross_rate,
-        (((sign_sales - reback_sales + income_amt) - (cost + sign_door_cost + cost_amt  -reback_cost))  / (sign_sales - reback_sales  + income_amt)) AS gross_rate,
-        -- 费用
-        (total_fee+expense_amt) AS expense,
-        -- 销毛额（销售额-成本-费用） (收入 - 成本 - 费用 - 返利 - 其他费用)(返利 = 收入 * 本月返利率)(其他费用 = 收入 * 本月其他费率)
-        -- (sign_sales - reback_sales  + income_amt- sign_sales*refund_rate)-(cost + sign_door_cost + cost_amt - reback_cost)-(total_fee+expense_amt) AS gross_sales_amount,
-        (sign_sales - reback_sales  + income_amt)-(cost + sign_door_cost + cost_amt - reback_cost)-(total_fee+expense_amt)-(refund_amt)-((sign_sales - reback_sales  + income_amt)*other_rate) AS gross_sales_amount,
-        -- 本月销毛目标
-        --gross_target as target_gross_sales_amount,
-        --销毛达成率
-        -- COALESCE((((sign_sales - reback_sales  + income_amt- sign_sales*refund_rate)-(cost + sign_door_cost + cost_amt -reback_cost)-(total_fee +expense_amt))/ gross_target), 0) AS gross_achievement_rate,
-        --COALESCE((((sign_sales - reback_sales  + income_amt)-(cost + sign_door_cost + cost_amt -reback_cost)-(total_fee +expense_amt)-((sign_sales - reback_sales  + income_amt)*refund_rate)-((sign_sales - reback_sales  + income_amt)*other_rate))/ gross_target), 0) AS gross_achievement_rate,
-         -- 销售毛利率
-         --((sign_sales - reback_sales  + income_amt- sign_sales*refund_rate)-(cost + sign_door_cost + cost_amt - reback_cost)-(total_fee+expense_amt))/(sign_sales - reback_sales + income_amt- sign_sales*refund_rate) as gross_sales_rate,
-         ((sign_sales - reback_sales  + income_amt)-(cost + sign_door_cost + cost_amt - reback_cost)-(total_fee+expense_amt)-(refund_amt)-((sign_sales - reback_sales  + income_amt)*other_rate))/(sign_sales - reback_sales + income_amt) as gross_sales_rate,
-
-         -- 广告费用
-        ad_fee AS ad_cost,
-        transaction_amount as transaction_amount,
-        --返利利率
-        refund_rate as refund_rate,
-        -- 其他费率
-        other_rate,
-        -- 发货数量
-        send_count as m_send_count,
-         -- 退货数量
-        reback_count as m_return_count,
-        -- 返利费用
-        refund_amt
-
-    FROM final_temp as m1
-
-),final_second_result as (
-   SELECT
-    channel_first,
-    CASE
-        WHEN NULLIF(channel_second, '') IS NULL THEN ''
-        ELSE channel_second
-    END as channel_second,
-    CASE
-        WHEN NULLIF(channel_third, '') IS NULL THEN ''
-        ELSE channel_third
-    END as channel_third,
-    product_line,
-    subdivision_product_line,
-    post_period,
-    -- 签收金额
-    SUM(month_sign) AS month_sign,
-    -- 发货金额
-    SUM(send_sales) AS send_sales,
-    -- 退货金额
-    SUM(month_return) AS month_return,
-    -- 销售额
-    SUM(sales_amount) AS sales_amount,
-    -- 发货销售额
-    SUM(send_sales_amount) AS send_sales_amount,
-    -- 本月销售目标
-    --SUM(target_sales_amount) AS target_sales_amount,
-    -- 销售达成率
-    --SUM(sales_achievement_rate) AS sales_achievement_rate,
-    -- 成本
-    SUM(cost) AS cost,
-    -- 硬毛额
-    SUM(gross_amount) AS gross_amount,
-    -- 硬毛率（硬毛额/销售额）
-    SUM(gross_rate) AS gross_rate,
-    -- 费用
-    SUM(expense) AS expense,
-    -- 销毛额
-    SUM(gross_sales_amount) AS gross_sales_amount,
-    -- 本月销毛目标
-    --SUM(target_gross_sales_amount) AS target_gross_sales_amount,
-    -- 销毛达成率
-    --SUM(gross_achievement_rate) AS gross_achievement_rate,
-    -- 销售毛利率
-    SUM(gross_sales_rate) AS gross_sales_rate,
-    -- 广告费用
-    SUM(ad_cost) AS ad_cost,
-    SUM(transaction_amount) AS transaction_amount,
-
-    -- 发货数量
-    SUM(m_send_count) AS m_send_count,
-    -- 退货数量
-    SUM(m_return_count) AS m_return_count,
-    sum(refund_amt) as m_refund_amt
-FROM final_results
-GROUP BY
-    channel_first,
-    CASE
-        WHEN NULLIF(channel_second, '') IS NULL THEN ''
-        ELSE channel_second
-    END,
-    CASE
-        WHEN NULLIF(channel_third, '') IS NULL THEN ''
-        ELSE channel_third
-    END,
-    product_line,
-    subdivision_product_line,
-    post_period
 )
-SELECT
-    fsr.channel_first,
-    fsr.channel_second,
-    fsr.channel_third,
-    fsr.product_line,
-    fsr.subdivision_product_line,
-    post_period,
-    -- 签收金额
-    month_sign,
-    -- 发货金额
-    send_sales,
-    -- 退货金额
-    month_return,
-    -- 销售额
-    sales_amount,
-    -- 发货销售额
-    send_sales_amount,
-    -- 本月销售目标
-    COALESCE(s3.sales_target,0) sales_target,
-    -- 销售达成率
-    COALESCE(sales_amount/s3.sales_target,0) sales_achievement_rate,
-    -- 成本
-    cost,
-    -- 硬毛额
-    gross_amount,
-    -- 硬毛率
-    gross_rate,
-    -- 费用
-    expense,
-    -- 销毛额
-    gross_sales_amount,
-    -- 本月销毛目标
-    COALESCE(s3.gross_target,0) gross_target,
-    -- 销毛达成率
-    COALESCE((gross_sales_amount/ s3.gross_target), 0) AS gross_achievement_rate,
-    -- 销售毛利率
-    gross_sales_rate,
-    -- 广告费用
-    ad_cost,
-    transaction_amount,
-    -- 返利利率
-    fl.refund_rate,
-    -- 其他费率
-    fl.other_rates,
-    -- 发货数量
-    m_send_count,
-    -- 退货数量
-    m_return_count,
-    m_refund_amt
-FROM final_second_result fsr
-    -- 关联目标表
-left join
-iot_dwd.dwd_iot_bi_sales_target_df as s3
-on
-fsr.channel_first = s3.channel_first
-AND (fsr.channel_second = s3.channel_second OR fsr.channel_second IS NULL OR NULLIF(s3.channel_second, '') IS NULL)
-AND (fsr.channel_third = s3.channel_third OR fsr.channel_third IS NULL OR NULLIF(s3.channel_third, '') IS NULL)
-and fsr.post_period = s3.period
-AND (fsr.subdivision_product_line = s3.subdivision_product_line OR fsr.subdivision_product_line IS NULL OR NULLIF(s3.subdivision_product_line, '') IS NULL)
--- 增加返利表（重新获取返利率与其他率）
-left join iot_dwd.dwd_iot_bi_rebate_fee_maintenance_mi as fl
-on fsr.channel_first = fl.channel_first
-AND fsr.channel_second = fl.channel_second
-AND fsr.channel_third = fl.channel_third
-and fsr.post_period = fl.period
-AND fsr.subdivision_product_line = fl.subdivision_product_line
+select m1.channel_first,COALESCE(m1.channel_second,'无') AS channel_second,COALESCE(m1.channel_third,'无') channel_third
+,m1.period,m1.dperiod,m1.hperiod, m1.sign_count,m1.send_count, m1.reback_count,
+(m1.sign_count-m1.reback_count) as order_count,m1.reback_count/m1.sign_count as reback_rate
+from month_count_result as m1
+
+where  m1.period is not null and m1.channel_first is not null and m1.hperiod is not null;
