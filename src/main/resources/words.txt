@@ -1,29 +1,8 @@
---drop table iot_dws.dws_iot_bi_order_volume_hour_ach_hi;
-CREATE TABLE if not exists iot_dws.dws_iot_bi_order_volume_hour_ach_hi (
-  `channel_first` varchar(100) NOT NULL COMMENT "一级渠道",
-  `channel_second` varchar(100) NOT NULL COMMENT "二级渠道",
-  `channel_third` varchar(100) NOT NULL COMMENT "三级渠道",
-  `period` varchar(50) NOT NULL COMMENT "年月",
-  `dperiod` varchar(50) NOT NULL COMMENT "日",
-  `hperiod` varchar(50) NOT NULL COMMENT "时",
-  `sign_count` int(11) NOT NULL COMMENT "签收量",
-  `send_count` int(11) NOT NULL COMMENT "发货量",
-  `reback_count` int(11) NOT NULL COMMENT "退货量",
-  `order_count` int(11) NOT NULL COMMENT "订单量（签收量-退货量）",
-  `reback_rate` decimal128(20, 10)  NULL COMMENT "退货率（退货量/签收量）"
-) ENGINE=OLAP
-PRIMARY KEY(`channel_first`, `channel_second`, `channel_third`, `period`, `dperiod`, `hperiod`)
-COMMENT "销售达成情况时维度"
-DISTRIBUTED BY HASH(`channel_first`, `channel_second`, `channel_third`, `period`, `dperiod`, `hperiod`) BUCKETS 10
-PROPERTIES (
-"replication_num" = "1",
-"in_memory" = "false",
-"storage_format" = "DEFAULT",
-"enable_persistent_index" = "false",
-"compression" = "LZ4"
-);
---truncate table iot_dws.dws_iot_bi_order_volume_hour_ach_hi;
-delete from `iot_dws`.`dws_iot_bi_order_volume_hour_ach_hi` where concat(period,'-',dperiod)=date_format(now(), '%Y-%m-%d') and channel_third!='360亚马逊';
+delete from `iot_dws`.`dws_iot_bi_order_volume_hour_ach_hi`
+where concat(period,'-',dperiod)=date_format(now(), '%Y-%m-%d')
+and channel_first = '海外'
+and channel_second = '自营'
+and channel_third = '360亚马逊';
 
 INSERT INTO `iot_dws`.`dws_iot_bi_order_volume_hour_ach_hi` (`channel_first`,`channel_second`,`channel_third`,`period`,`dperiod`,`hperiod`,`sign_count`,`send_count`,`reback_count`,`order_count`,`reback_rate`)
 with sales_gross_temp as (
@@ -69,9 +48,12 @@ month_count_temp as (
 ),
 month_count_result as (
     select channel_first, channel_second,channel_third,DATE_FORMAT(period, '%Y-%m') as period,DATE_FORMAT(period, '%d') as dperiod,DATE_FORMAT(period, '%H') as hperiod, sum(sign_count) as sign_count , sum(send_count) as send_count,sum(reback_count) as reback_count from month_count_temp
-    where  DATE_FORMAT(period, '%Y-%m-%d') = DATE_FORMAT(CURDATE(), '%Y-%m-%d') group by
+    where  DATE_FORMAT(period, '%Y-%m-%d') = DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+    and channel_first = '海外'
+    and channel_second = '自营'
+    and channel_third = '360亚马逊'
+    group by
     channel_first, channel_second,channel_third,period,dperiod,hperiod
-
 )
 select m1.channel_first,COALESCE(m1.channel_second,'无') AS channel_second,COALESCE(m1.channel_third,'无') channel_third
 ,m1.period,m1.dperiod,m1.hperiod, m1.sign_count,m1.send_count, m1.reback_count,
