@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.TreeNode;
+
 public class test1022 {
     public int sumRootToLeaf(TreeNode root) {
         return this.dfs(root, 0);

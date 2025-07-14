@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.TreeNode;
+
 public class test654 {
     public TreeNode constructMaximumBinaryTree(int[] nums) {
         return build(nums,0,nums.length-1);

@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.TreeNode;
+
 public class TreeBuilder {
     public TreeNode buildTree(Integer[] data) {
         return buildTree(data, 0);

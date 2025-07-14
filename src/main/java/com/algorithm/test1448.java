@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.TreeNode;
+
 public class test1448 {
     public int goodNodes(TreeNode root) {
         return dfs(root,Integer.MIN_VALUE);

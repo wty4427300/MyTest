@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.TreeNode;
+
 public class test1026 {
     public int maxAncestorDiff(TreeNode root) {
         return dfs(root, root.val, root.val);

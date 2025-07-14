@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.TreeNode;
+
 public class test2331 {
     public boolean evaluateTree(TreeNode root) {
         if (root.left == null) {

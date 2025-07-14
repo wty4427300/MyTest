@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.TreeNode;
+
 public class test1080 {
     public TreeNode sufficientSubset(TreeNode root, int limit) {
         return this.dfs(root, 0, limit) ? root : null;

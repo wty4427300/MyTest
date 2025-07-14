@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.ListNode;
+
 import java.util.HashSet;
 import java.util.Set;
 

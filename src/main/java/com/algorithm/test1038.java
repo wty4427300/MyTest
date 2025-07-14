@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.TreeNode;
+
 public class test1038 {
     private int s = 0;
     public TreeNode bstToGst(TreeNode root) {

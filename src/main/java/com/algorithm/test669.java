@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.TreeNode;
+
 public class test669 {
     public TreeNode trimBST(TreeNode root, int low, int high) {
         if(root==null){

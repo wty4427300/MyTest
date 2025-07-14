@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.TreeNode;
+
 /**
  * 目前的写法会导致树高度失衡，下次再优化
  */

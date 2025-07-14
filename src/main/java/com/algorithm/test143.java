@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.ListNode;
+
 public class test143 {
     public void reorderList(ListNode head) {
         if (head == null) {

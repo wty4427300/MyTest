@@ -1,5 +1,7 @@
 package com.algorithm;
 
+import com.algorithm.base.TreeNode;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;

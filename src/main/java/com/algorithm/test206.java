@@ -1,21 +1,6 @@
 package com.algorithm;
 
-class ListNode {
-    int val;
-    ListNode next;
-
-    ListNode() {
-    }
-
-    ListNode(int val) {
-        this.val = val;
-    }
-
-    ListNode(int val, ListNode next) {
-        this.val = val;
-        this.next = next;
-    }
-}
+import com.algorithm.base.ListNode;
 
 public class test206 {
     public ListNode reverseList(ListNode head) {
