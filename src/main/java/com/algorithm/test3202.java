@@ -1,7 +1,5 @@
 package com.algorithm;
 
-import java.util.Arrays;
-
 public class test3202 {
 
     public int maximumLength(int[] nums, int k) {
